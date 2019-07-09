@@ -66,4 +66,8 @@ ReactDOM.render(React.createElement(
 ), document.getElementById('root'));
 ```
 
-実態はReactJSのReact.createElementメソッドにて動的にDOMが生成されていることがわかります。
+実態はReactJSのReact.createElementメソッドにて動的にDOMが生成されていることがわかります。  
+
+各種babelのpluginsを使うことでReactJSやES6をES5に変換したり、ブラウザの下位互換性があるコードに変換してくれます。  
+最近はわざわざbabelのpluginsをダウンロードしてトランスパイルしなくても  
+CDN経由でbabelのpollyfillが使える[polyfill.io](https://polyfill.io/v3/url-builder/)なんてのもあります。  
