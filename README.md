@@ -179,24 +179,6 @@ export default connect(
 ```
 
 このようにコンポーネントで管理したくないビジネスロジックデータはReduxで管理します。
-ちなみにdecoratorsを使わないApp.jsの実装は次のようになります。
-
-```App.js
-import React from 'react'
-import { connect } from 'react-redux';
-import { load } from './user'
-
-class App extends React.Component {
-  // 略
-}
-
-export default connect(
-  state => ({
-    users: state.user.users
-  }),
-  { load }  
-)(App)
-```
 
 # Redux-devtoolsについて
 [Redux-devtoolのプラグイン拡張](https://github.com/zalmoxisus/redux-devtools-extension)を使うと  
