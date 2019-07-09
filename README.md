@@ -52,12 +52,12 @@ index.htmlを次のようにbundle.jsのみ読み込むように書き換えて�
 </html>
 ```
 
-Reactのコンポーネントを作成します。(App.js)  
+Reactのコンポーネントを作成します。(App.jsx)  
 ReactのコンポーネントはReact.Componentを継承することで作成します。  
 renderメソッドでDOMを返却するようにします。  
 export defaultで外部のJSからクラスをimportできるようにします。  
 
-```App.js
+```App.jsx
 import React from 'react'
 
 export default class App extends React.Component {
@@ -69,20 +69,20 @@ export default class App extends React.Component {
 }
 ```
 
-index.jsにて作成したReactコンポーネントをimportしてDOMをレンダリングします。  
+index.jsxにて作成したReactコンポーネントをimportしてDOMをレンダリングします。  
 ここで注目してほしいのはJSXにて<App />というDOMが指定できるようになっています。  
 React DOMによって作成したReactコンポーネントは新しいDOMとして指定できるようになります。  
 （DOMの振る舞いはReactコンポーネント内部でJSで記述する）  
 最終的なレンダリングはReactコンポーネントのrenderメソッドにて返却されるDOMが描画されます。  
 
-```index.js
+```index.jsx
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
+import App from './App.jsx'
 
 ReactDOM.render(
-  <App />,
-  document.getElementById('root')
+    <App />,
+    document.getElementById('root')
 )
 ```
 
@@ -92,13 +92,13 @@ webpack.config.jsにてbundle.jsを生成する設定を書きます。
 module.exports = {
   devtool: 'inline-source-map', // ソースマップファイル追加 
   mode: 'development',
-  entry: './index.js', // エントリポイントのjsxファイル
+  entry: './index.jsx', // エントリポイントのjsxファイル
   output: {
     filename: 'bundle.js' // 出力するファイル
   },
   module: {
     rules: [{
-      test: /\.js?$/, // 拡張子がjsで
+      test: /\.jsx?$/, // 拡張子がjsxで
       exclude: /node_modules/, // node_modulesフォルダ配下は除外
       use: {
         loader: 'babel-loader', // babel-loaderを使って変換する
@@ -120,8 +120,8 @@ Version: webpack 3.9.1
 Time: 1408ms
 Asset     Size        Chunks                Chunk Names
 bundle.js  1.87 MB       0  [emitted]  [big]  main
-  [14] ./index.js 168 bytes {0} [built]
-  [27] ./App.js 214 bytes {0} [built]
+  [14] ./index.jsx 168 bytes {0} [built]
+  [27] ./App.jsx 214 bytes {0} [built]
     + 26 hidden modules
 ```
 

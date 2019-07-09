@@ -1,13 +1,13 @@
 module.exports = {
   devtool: 'inline-source-map', // ソースマップファイル追加 
   mode: 'development',
-  entry: './index.js', // エントリポイントのjsxファイル
+  entry: './index.jsx', // エントリポイントのjsxファイル
   output: {
     filename: 'bundle.js' // 出力するファイル
   },
   module: {
     rules: [{
-      test: /\.js?$/, // 拡張子がjsで
+      test: /\.jsx?$/, // 拡張子がjsxで
       exclude: /node_modules/, // node_modulesフォルダ配下は除外
       use: {
         loader: 'babel-loader', // babel-loaderを使って変換する
