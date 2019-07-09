@@ -7,7 +7,7 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.jsx?$/, // 拡張子がjsxで
+      test: /\.(js|jsx)$/, // 拡張子がjsかjsxで
       exclude: /node_modules/, // node_modulesフォルダ配下は除外
       use: {
         loader: 'babel-loader', // babel-loaderを使って変換する
