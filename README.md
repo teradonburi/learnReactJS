@@ -1,73 +1,177 @@
-# ミニマムなReactJS
+# webpack + Babelでコンポーネントを作成する
 
-ReactJSでDOMをレンダリングするには  
+webpackを使うことで複数のリソースファイルを１つにまとめることができます。  
+さらにBabelと組み合わせることでJSXの変換に加えてブラウザではまだ未対応のimport文などが利用可能になります。  
+これにより、JSファイルからJSファイルのモジュールを呼び出すような構成が可能になります。  
+webpackでビルドするためにパッケージを追加します。  
 
-* ReactJS  
-* React DOM  
-* Babel Core
+```
+$ yarn add --dev webpack webpack-cli babel-loader @babel/core @babel/preset-env @babel/preset-react react react-dom --ignore-engines
+```
 
-が必要です。  
+package.jsonは次のようになります。
+
+```package.json
+{
+  "name": "learnreactjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/teradonburi/learnReactJS.git",
+  "author": "teradonburi <daikiterai@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "webpack": "webpack --mode development"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.2",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.5"
+  }
+}
+```
+
+index.htmlを次のようにbundle.jsのみ読み込むように書き換えてください
+（bundle.jsはwebpackでビルド後に生成されるファイル想定）
+以降、index.htmlを書き換えることはほぼありません。
 
 ```index.html
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <script src="./react.min.js"></script>
-  <script src="./react-dom.min.js"></script>
-  <script src="./babel-core.min.js"></script>
+  <meta charset="utf-8" />
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
-    ReactDOM.render(
-      <h1>Hello, world!</h1>,
-      document.getElementById('root')
-    )
-  </script>
+  <script type='text/javascript' src="./dist/bundle.js" ></script>
 </body>
 </html>
 ```
 
-実際にレンダリングしているのはReactDOM.renderの部分です。  
-ここで注目すべき点はscriptタグ内なのに  
-`<h1>`タグ（DOM）が記述されている点です。  
-実際に実行される際にはBabelにて次のようなJSに変換されます。  
-上記のような一見DOMが混じったようなJSの記法をJSXと呼びます。  
-JSXはBebelによってJSのソースコードに変換(トランスパイル)されます。  
-実際にどのように変換されるか見てみましょう。  
-  
-ReactDOM.render部分のみのtest.jsxを作成します。  
+Reactのコンポーネントを作成します。(App.js)  
+ReactのコンポーネントはReact.Componentを継承することで作成します。  
+renderメソッドでDOMを返却するようにします。  
+export defaultで外部のJSからクラスをimportできるようにします。  
 
-```test.jsx
+```App.js
+import React from 'react'
+
+export default class App extends React.Component {
+
+  render () {
+    return <h1>Hello, world!</h1>
+  }
+
+}
+```
+
+index.jsにて作成したReactコンポーネントをimportしてDOMをレンダリングします。  
+ここで注目してほしいのはJSXにて<App />というDOMが指定できるようになっています。  
+React DOMによって作成したReactコンポーネントは新しいDOMとして指定できるようになります。  
+（DOMの振る舞いはReactコンポーネント内部でJSで記述する）  
+最終的なレンダリングはReactコンポーネントのrenderメソッドにて返却されるDOMが描画されます。  
+
+```index.js
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
+  <App />,
   document.getElementById('root')
 )
 ```
 
-BabelとJSXトランスパイラをインストールします。  
+webpack.config.jsにてbundle.jsを生成する設定を書きます。
+
+```webpack.config.js
+module.exports = {
+  devtool: 'inline-source-map', // ソースマップファイル追加 
+  mode: 'development',
+  entry: './index.js', // エントリポイントのjsxファイル
+  output: {
+    filename: 'bundle.js' // 出力するファイル
+  },
+  module: {
+    rules: [{
+      test: /\.js?$/, // 拡張子がjsで
+      exclude: /node_modules/, // node_modulesフォルダ配下は除外
+      use: {
+        loader: 'babel-loader', // babel-loaderを使って変換する
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react'], // env presetでES2015向けに変換、react presetでReactのJSX文法を変換
+        }
+      }
+    }]
+  }
+}
+```
+
+次のコマンドでindex.jsに付随するJSファイルをまとめてビルドして一つのbundle.jsとして出力することができます
+
+```webpack.config.js
+$ yarn webpack
+Hash: 4abc329581564efc9932
+Version: webpack 3.9.1
+Time: 1408ms
+Asset     Size        Chunks                Chunk Names
+bundle.js  1.87 MB       0  [emitted]  [big]  main
+  [14] ./index.js 168 bytes {0} [built]
+  [27] ./App.js 214 bytes {0} [built]
+    + 26 hidden modules
+```
+
+index.htmlを開くと表示されるはずです。
+
+# ReactJSのデバッグ
+
+## ソースファイル変更を検知して再ビルド
+
+下記のコマンドでwebpackの監視モードにするとビルド対象のJSファイルの変更が保存されるとビルドされるようになります。（開発中は楽です。）
 
 ```
-# package.json作成
-$ yarn init -y
-# BabelコマンドとBabelのJSXトランスパイラプラグインをダウンロード
-$ yarn add @babel/cli @babel/core @babel/plugin-transform-react-jsx
+$ yarn webpack --watch
 ```
 
-次のコマンドでtest.jsxに対して直接Babelのトランスパイルを行うとcompile.jsが出力されます。
+次のコマンドでも等価です。  
 
 ```
-$ npx babel --plugins @babel/transform-react-jsx test.jsx
-ReactDOM.render(React.createElement(
-  'h1',
-  null,
-  'Hello, world!'
-), document.getElementById('root'));
+$ npx webpack --mode development --watch
+// webpack.config.jsの設定を参照するのでmodeフラグは不要
+$ npx webpack --watch
 ```
 
-実態はReactJSのReact.createElementメソッドにて動的にDOMが生成されていることがわかります。  
 
-各種babelのpluginsを使うことでReactJSやES6をES5に変換したり、ブラウザの下位互換性があるコードに変換してくれます。  
-最近はわざわざbabelのpluginsをダウンロードしてトランスパイルしなくても  
-CDN経由でbabelのpollyfillが使える[polyfill.io](https://polyfill.io/v3/url-builder/)なんてのもあります。  
+## コンポーネント単位のDOM把握
+
+[React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=ja)（ChromeのReact開発用ブラウザアドオン）
+を導入すると  
+Reactのコンポーネント単位でDOMツリーが把握できます。  
+
+## ブレークポイントをかける
+  
+bableでトランスパイルするとJSファイルはすべて１つのbundle.jsにまとめられてしまいます。  
+ソースマップと呼ばれるファイルをブラウザに読み込ませることで  
+元のJSソースファイルの情報をブラウザに認識させることができます。  
+（これにより元のJSファイル単位でブレークポイントをかけられる）  
+webpackのソースマップファイルを有効にすることで元の各JSファイルを単位でブレークポイントをかけれます。
+
+```webpack.config.js
+module.exports = {
+  devtool: 'inline-source-map', // ソースマップファイル追加 
+}
+```
+
+また、ソースファイル中にdebugger文を挿入することで指定箇所にブレークポイントをかけれます。  
+（本番環境では処理が止まってしまうので挿入しないように注意）  
+
+```
+debugger;
+```
+
+
+もっと詳しく知りたい人はこちら：[Intro to debugging ReactJS applications](https://medium.com/@baphemot/intro-to-debugging-reactjs-applications-67cf7a50b3dd)
