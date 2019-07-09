@@ -86,5 +86,15 @@ $ yarn add (パッケージ名)
 # yarn add --dev (パッケージ名)
 ```
 
+ライブラリとnodejs v10以降との互換性でBuffer周りの警告が出てインストール出来ない場合があります。  
+その場合は`--ignore-engines`オプションをつけることで回避できます。  
+
+```
+# yarn インストールの場合
+$ yarn --ignore-engines
+# yarn addの場合
+$ yarn add (パッケージ名) --ignore-engines
+```
+
 npmコマンドとyarnコマンドの比較はこちら  
 [yarnチートシート](https://qiita.com/morrr/items/558bf64cd619ebdacd3d)
