@@ -1,0 +1,13 @@
+{
+  "name": "learnreactjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/teradonburi/learnReactJS.git",
+  "author": "teradonburi <daikiterai@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/plugin-transform-react-jsx": "^7.0.0"
+  }
+}
