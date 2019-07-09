@@ -1,33 +1,90 @@
-# ReactJS勉強会
+# 環境構築
 
-ReactJS勉強会用資料を各ブランチにまとめてます。  
-上から順番に説明します。  
+NodeJSインストール  
+まずバージョン管理用のNodeJSツールをインストールします。  
+このバージョン管理ツール経由でNodeJSをインストールをすると  
+後々NodeJSがアップグレードした場合でも切り替えが楽です。  
+今回は8.6.0のNodeJSをインストールします。  
 
-- [start](https://github.com/teradonburi/learnReactJS/tree/start):開発環境導入
-- [ES6](https://github.com/teradonburi/learnReactJS/tree/ES6): ES6,ES7のよく使うJavaScript文法のおさらい
-- [ReactJSStart](https://github.com/teradonburi/learnReactJS/tree/ReactJSStart): ReactJSの概念、JSXについて
-- [webpack](https://github.com/teradonburi/learnReactJS/tree/webpack): webpackの導入とReactコンポーネント作成手順
-- [ReactJSBasic](https://github.com/teradonburi/learnReactJS/tree/ReactJSBasic): ReactJSの基本(props、state、css)
-- [refs](https://github.com/teradonburi/learnReactJS/tree/refs):ref参照について
-- [ReactHook](https://github.com/teradonburi/learnReactJS/tree/ReactHook):ReactHookについて
-- [decorators](https://github.com/teradonburi/learnReactJS/tree/decorators):decoratorsについて
-- [HOC](https://github.com/teradonburi/learnReactJS/tree/HOC):HOCについて 
-- [ReactRedux](https://github.com/teradonburi/learnReactJS/tree/ReactRedux):アプリケーション全体の状態管理について 
-- [MaterialUI](https://github.com/teradonburi/learnReactJS/tree/MaterialUI):マテリアルデザインでのUI実装 
-- [ReactHotLoader](https://github.com/teradonburi/learnReactJS/tree/ReactHotLoader):ReactHotLoaderでの自動リロード 
-- [ReactRouter](https://github.com/teradonburi/learnReactJS/tree/ReactRouter):ReactJSでの画面遷移(SPA)
-- [ReduxForm](https://github.com/teradonburi/learnReactJS/tree/ReduxForm):ReduxFormでのフォーム送信
-- [ESLint](https://github.com/teradonburi/learnReactJS/tree/ESLint):ESLintでのコードチェック
-- [ReleaseBuild](https://github.com/teradonburi/learnReactJS/tree/ReleaseBuild):リリースビルド
-- [AsyncComponent](https://github.com/teradonburi/learnReactJS/tree/AsyncComponent):遅延レンダリング（Code Spliting）
-- [SSR](https://github.com/teradonburi/learnReactJS/tree/SSR):サーバサイドレンダリング（Server Side Rendering）
 
-次のコマンドでブランチを切り替えて進めていきます。  
+* Mac OSX: [Nodebrew](https://github.com/hokaccha/nodebrew)
 
-```sh
-# gitトラッキングしていないファイルを消す
-$ git clean -dfx
-# checkout
-$ git checkout (ブランチ名)
+Nodebrewダウンロード
+
+```
+curl -L git.io/nodebrew | perl - setup
 ```
 
+.bash_profileに環境変数パスを通す
+
+```.bash_profile
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+```
+
+.bash_prodileを適用
+
+```
+$ source ~/.bash_profile
+```
+
+NodeJSインストール
+
+```
+$ nodebrew install-binary v10.15.3
+$ nodebrew use v10.15.3
+$ node -v
+```
+
+エディタは個人的に[Visual Studio Code](https://code.visualstudio.com/)がおすすめ  
+VSCodeをお使いの人はついでに[VSCodeで爆速コーディング環境を構築する(主にReactJS向け設定)](https://qiita.com/teradonburi/items/c4cbd7dd5b4810e1a3a9)も読むと幸せになれるかも  
+
+
+# npmについて
+NodeJS付属のnpmというパッケージ管理ツールを使うとパッケージをまとめて管理できます。  
+パッケージ管理用のpackage.jsonファイルを作成します。  
+
+```
+$ npm init -y
+```
+
+次のコマンドで使いたいパッケージをインストールすることができます。
+
+```
+$ npm install --save (パッケージ名)
+
+# 開発用としてインストールする(Babelなどでトランスパイルするパッケージはこちら)
+$ npm install --save-dev (パッケージ名)
+```
+
+package.jsonに記述された依存パッケージを  
+次のコマンドでまとめてインストールすることができます。  
+(gitにnode_modulesフォルダを管理する必要はありません)  
+
+```
+$ npm install
+```
+
+もしくは後発の[Yarn](https://yarnpkg.com/lang/en/)というパッケージ管理ツールでもインストールできます。
+
+```
+# homebrew インストール
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# yarn インストール
+$ brew install yarn --without-node
+
+# npm initと等価
+$ yarn init
+
+# npm installと等価
+$ yarn
+
+# npm install --save (パッケージ名)と等価
+$ yarn add (パッケージ名)
+
+# npm install --save-dev (パッケージ名)と等価
+# yarn add --dev (パッケージ名)
+```
+
+npmコマンドとyarnコマンドの比較はこちら  
+[yarnチートシート](https://qiita.com/morrr/items/558bf64cd619ebdacd3d)
