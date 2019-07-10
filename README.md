@@ -1,114 +1,25 @@
-# Reduxによる状態制御
-props経由にデータを渡したり、親コンポーネントのイベントメソッドを指定することで  
-子コンポーネントへのデータ伝達や親コンポーネントのコールバック呼び出しが可能です。  
-ただし、アプリケーション全体のデータ（DBのデータ）をpropsでバケツリレーのように受け渡したりするのは非効率な上に、  
-親コンポーネントのstateに子コンポーネントが影響する構造は全体のstateが把握できなくなり不具合の原因になります。  
-
-![Reactのデータフロー](https://github.com/teradonburi/learnReactJS/blob/ReactRedux/dataflow.png)
-
-そこでReduxを用いることでアプリケーション全体の状態を管理し、  
-イベントコールバック→一元管理されたストアのパラメータ更新→描画反映  
-といったことが楽になります。  
-（類似のフレームワークにfluxがあります。）  
-参考：[ToDoアプリで学ぶReact/Redux入門/vtecx2_lt2](https://speakerdeck.com/nishina555/vtecx2-lt2)  
-参考：[Redux入門【ダイジェスト版】10分で理解するReduxの基礎](https://qiita.com/kiita312/items/49a1f03445b19cf407b7)  
-参考：[React+Redux入門](https://qiita.com/erukiti/items/e16aa13ad81d5938374e)  
-SPAなReactJSと特に相性が良いです。  
+# Material-UIでモダンな画面を作る
+[マテリアルデザイン](https://material.io/guidelines/)はGoogleが提唱するデザインフォーマットです。  
+フラットデザインに現実の物理要素（影やフィードバック）を持たせたようなデザインです。  
+Androidアプリでの全面的な利用など最近のアプリケーションのデザインは大体マテリアルデザインでできています。  
   
-Reduxは次の思想で設計されています。  
-
-1. ストアがいっぱいあると不整合が起きるのでビューに使うコンポーネントから分離して１つのストアに格納する
-2. ストアの状態を更新するためには決められたアクション経由で行う
-3. Stateの変更を行うReducerはシンプルな関数(Pure関数)にする
-
-ReactとReduxを連動させるためにはreact-reduxのnpmパッケージを使います。
-action呼び出し→reducer→コンポーネント再描画の一方通行のフロー制御に関しては  
-react-reduxのconnectを使うことで実現できます。  
-[ReactとReduxを結ぶパッケージ「react-redux」についてconnectの実装パターンを試す](https://qiita.com/MegaBlackLabel/items/df868e734d199071b883)  
-
-追加で下記のRedux関連のパッケージをインストールします。  
+ReactJSではマテリアルデザインを踏襲した[Material-UI](https://material-ui.com/)というライブラリがあります。    
+Material-UIのパッケージをインストールします。  
 
 ```
-$ yarn add --dev redux redux-devtools redux-thunk react-redux --ignore-engines
+$ yarn add --dev @material-ui/core @material-ui/icons --ignore-engines
 ```
 
-react-reduxを実際に使う場面は通信（アプリケーションデータ）や画面遷移周りだと思います。  
-redux-thunkを使うとaction部分の処理を非同期にできます。  
-  
-通信用のライブラリ（axios）をインストールします  
-
-```
-$ yarn add --dev axios --ignore-engines
-```
-
-user.jsにuser情報を取得するactionとreducerを記述します。  
-Random User Generatorで生成した疑似ユーザ情報をAPIで取得するactionを作成します。  
-redux-thunkを使うとaction部分を非同期で記述できます。  
-
-```user.js
-// reducerで受け取るaction名を定義
-const LOAD = 'user/LOAD'
-
-// 初期化オブジェクト
-const initialState = {
-  users: null,
-}
-
-// reducerの定義（dispatch時にコールバックされる）
-export default function reducer(state = initialState, action = {}){
-  // actionの種別に応じてstateを更新する
-  switch (action.type) {
-    case LOAD:
-      return {
-        users:action.results,
-      }
-    default:
-      // 初期化時はここに来る（initialStateのオブジェクトが返却される）
-      return state
-  }
-}
-
-// actionの定義
-export function load() {
-  // clientはaxiosの付与したクライアントパラメータ（後述）
-  // 非同期処理をPromise形式で記述できる
-  return (dispatch, getState, client) => {
-    return client
-      .get('https://randomuser.me/api/')
-      .then(res => res.data)
-      .then(data => {
-        const results = data.results
-        // dispatchしてreducer呼び出し
-        dispatch({ type: LOAD, results })
-      })
-  }
-}
-```
-
-reducer.jsに読み込むreducerを記述します
-
-```reducer.js
-import { combineReducers } from 'redux'
-// 作成したuserのreducer
-import user from './user'
-
-// 作成したreducerをオブジェクトに追加していく
-// combineReducersで１つにまとめてくれる
-export default combineReducers({
-  user,
-})
-```
-
-index.jsxにてReduxのstoreを作成し  
-storeにreducerを適応します。  
-redux-thunkミドルウェアを適応することで  
-actionにaxiosオブジェクトが引数として渡るようになります。  
+index.jsxにmaterial-uiのテーマの指定をします。  
+createMuiThemeでテーマを作成し、  
+MuiThemeProviderでテーマを全体に指定します。  
 
 ```index.jsx
 import React  from 'react'
 import ReactDOM from 'react-dom'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import client from 'axios'
 import thunk from 'redux-thunk'
 
@@ -122,53 +33,179 @@ const thunkWithClient = thunk.withExtraArgument(client)
 // redux-thunkをミドルウェアに適用
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunkWithClient)))
 
+// Material-UIテーマを上書きする
+const theme = createMuiTheme({
+  // カラーパレット
+  palette: {
+    type: 'light',
+    // メインカラー
+    primary: {
+      50: '#e3f2fd',
+      100: '#bbdefb',
+      200: '#90caf9',
+      300: '#64b5f6',
+      400: '#42a5f5',
+      500: '#2196f3',
+      600: '#1e88e5',
+      700: '#1976d2',
+      800: '#1565c0',
+      900: '#0d47a1',
+      A100: '#82b1ff',
+      A200: '#448aff',
+      A400: '#2979ff',
+      A700: '#2962ff',
+      contrastDefaultColor: 'light', // 対象色のデフォルト色をlightテーマにする
+    },
+    // アクセントカラー
+    secondary: {
+      50: '#fce4ec',
+      100: '#f8bbd0',
+      200: '#f48fb1',
+      300: '#f06292',
+      400: '#ec407a',
+      500: '#e91e63',
+      600: '#d81b60',
+      700: '#c2185b',
+      800: '#ad1457',
+      900: '#880e4f',
+      A100: '#ff80ab',
+      A200: '#ff4081',
+      A400: '#f50057',
+      A700: '#c51162',
+      contrastDefaultColor: 'light', // 対象色のデフォルト色をlightテーマにする
+    },
+  },
+  // レスポンシブレイアウト用の指定
+  'breakpoints': {
+    'keys': [
+      'xs',
+      'sm',
+      'md',
+      'lg',
+      'xl',
+    ],
+    'values': {
+      'xs': 360, // スマホ用
+      'sm': 768, // タブレット用
+      'md': 992, // PC用
+      'lg': 1000000000, 
+      'xl': 1000000000,
+    },
+  },
+  // Material-UIコンポーネントのclassのstyleを上書きする
+  overrides: {
+    MuiButton: {
+      root: {
+        // ボタン内アルファベット文字を大文字変換しない
+        textTransform: 'none',
+      },
+    },
+  },
+})
+
 ReactDOM.render(
+  // MuiThemeProviderにテーマの指定をする
+  <MuiThemeProvider theme={theme}>
     <Provider store={store}>
       <App />
-    </Provider>,
-    document.getElementById('root')
+    </Provider>
+  </MuiThemeProvider>,
+  document.getElementById('root')
 )
 ```
 
-App.jsでuser情報取得のactionをキック、reducer経由でのstate更新を行います。
+ユーザを取得したApp.jsxをmaterial-uiで書き直します。
 
 ```App.jsx
 import React from 'react'
 import { connect } from 'react-redux';
 import { load } from './user'
 
+import { withTheme, withStyles } from '@material-ui/core/styles'
+import { AppBar,Toolbar, Avatar, Card, CardContent, Button, Dialog, DialogTitle, DialogContent } from '@material-ui/core'
+import { Email } from '@material-ui/icons'
+import withWidth from '@material-ui/core/withWidth'
+import { orange } from '@material-ui/core/colors'
+
 class App extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      open:false,
+      user:null,
+    }
+  }
 
   componentDidMount() {
     // user取得APIコールのactionをキックする
     this.props.load()
   }
 
+  handleClickOpen (user) {
+    this.setState({
+      open: true,
+      user: user,
+    })
+  }
+
+  handleRequestClose () {
+    this.setState({ open: false })
+  }
+
   render () {
-    const { users } = this.props
+    const { users, theme, classes, width } = this.props
+    const { primary, secondary } = theme.palette
+
     // 初回はnullが返ってくる（initialState）、処理完了後に再度結果が返ってくる
     console.log(users)
     return (
       <div>
-          {/* 配列形式で返却されるためmapで展開する */}
-          {users && users.map((user) => {
-            return (
-                // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
-                <div key={user.email}>
-                  <img src={user.picture.thumbnail} />
-                  <p>名前:{user.name.first + ' ' + user.name.last}</p>
-                  <p>性別:{user.gender}</p>
-                  <p>email:{user.email}</p>
+        <AppBar position="static" color="primary">
+          <Toolbar classes={{root: classes.root}} >
+            タイトル({ width === 'xs' ? 'スマホ' : 'PC'})
+          </Toolbar>
+        </AppBar>
+        {/* 配列形式で返却されるためmapで展開する */}
+        {users && users.map((user) => {
+          return (
+            // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
+            <Card key={user.email} style={{marginTop:'10px'}}>
+              <CardContent style={{color:'#408040'}}>
+                <Avatar src={user.picture.thumbnail} />
+                <p style={{margin:10, color:primary[500]}}>{'名前:' + user.name.first + ' ' + user.name.last} </p>
+                <p style={{margin:10, color:secondary[500]}}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
+                <div style={{textAlign: 'right'}} >
+                  <Button variant="contained" color='secondary' onClick={() => this.handleClickOpen(user)}><Email style={{marginRight: 5, color: orange[200]}}/>Email</Button>
                 </div>
-            )
-          })}
+              </CardContent>
+            </Card>
+          )
+        })}
+        {
+          this.state.open &&
+          <Dialog open={this.state.open} onClose={() => this.handleRequestClose()}>
+            <DialogTitle>メールアドレス</DialogTitle>
+            <DialogContent>{this.state.user.email}</DialogContent>
+          </Dialog>
+        }
       </div>
     )
   }
 }
 
+App = withWidth()(App) // width propsを付与
+App = withTheme(App) // theme propsを付与
+App = withStyles({ // classes propsを付与
+  root: {
+    fontStyle: 'italic',
+    fontSize: 21,
+    minHeight: 64,
+  }
+})(App)
+
 // connectでwrap
-export default connect(
+App = connect(
   // propsに受け取るreducerのstate
   state => ({
     users: state.user.users
@@ -176,20 +213,231 @@ export default connect(
   // propsに付与するactions
   { load }
 )(App)
+
+export default App
 ```
 
-このようにコンポーネントで管理したくないビジネスロジックデータはReduxで管理します。
+Material-UIの各コンポーネントに関しては  
+公式：[Material-UI](https://material-ui.com/)のComponents Demoに各種コンポーネントのデモがあるので、それを見たほうが理解できると思います。  
 
-# Redux-devtoolsについて
-[Redux-devtoolのプラグイン拡張](https://github.com/zalmoxisus/redux-devtools-extension)を使うと  
-Reduxのstoreの状態やaction履歴について可視化できます。  
-[Chrome　Addon](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)を追加後、localhostサーバ上で動かすと確認できます。  
-webpack-dev-serverを用いるとwebpackとlocalhostサーバの起動を同時に行うことができます。  
-webpack-dev-serverの詳細な設定はReact Hot Loaderの項にて説明します。  
+# テーマ
+Material-UIではマテリアルデザインガイドに沿った  
+[色パレット](https://material-ui.com/style/color/)や[テーマ](https://material-ui.com/customization/themes/)の指定を行います。  
+デフォルトではlightテーマとdarkテーマが用意されていますが、  
+サービスによってテーマ色を変えたいという要望は普通なのでカラーパレットを上書きします。  
+独自に色作るときは、色の濃淡も規則性があるのでGeneratorを使って生成したほうが[マテリアルデザインガイド通り](https://material.io/guidelines/style/color.html#color-color-system)なので無難です。  
+[MATERIAL DESIGN PALETTE GENERATOR](http://mcg.mbitson.com/#!?mcgpalette0=%233f51b5)を使うと指定色ベースで作ってくれます。  
+  
+
+```index.js
+const theme = createMuiTheme({
+  // カラーパレット
+  palette: {
+    type: 'light',
+    // メインカラー
+    primary: {
+      50: '#e3f2fd',
+      100: '#bbdefb',
+      200: '#90caf9',
+      300: '#64b5f6',
+      400: '#42a5f5',
+      500: '#2196f3',
+      600: '#1e88e5',
+      700: '#1976d2',
+      800: '#1565c0',
+      900: '#0d47a1',
+      A100: '#82b1ff',
+      A200: '#448aff',
+      A400: '#2979ff',
+      A700: '#2962ff',
+      contrastDefaultColor: 'light', // 対象色のデフォルト色をlightテーマにする
+    },
+    // アクセントカラー
+    secondary: {
+      50: '#fce4ec',
+      100: '#f8bbd0',
+      200: '#f48fb1',
+      300: '#f06292',
+      400: '#ec407a',
+      500: '#e91e63',
+      600: '#d81b60',
+      700: '#c2185b',
+      800: '#ad1457',
+      900: '#880e4f',
+      A100: '#ff80ab',
+      A200: '#ff4081',
+      A400: '#f50057',
+      A700: '#c51162',
+      contrastDefaultColor: 'light', // 対象色のデフォルト色をlightテーマにする
+    },
+  },
+})
+```
+
+利用側では、  
+withThemeを使うとprops.themeが使えるようになります。  
+カラーパレットからcommon,primary,secondary,grey,errorなどが使えます。  
+color属性を持っている[Button](https://material-ui.com/demos/buttons/)等のコンポーネントは'primary'、'secondary'、'default'、'inherit'などで背景色指定することもできます
+
+```App.js
+import { withTheme } from '@material-ui/core/styles'
+
+class App extends React.Component {
+  render () {
+    const { theme } = this.props
+    const { primary, secondary } = theme.palette
+
+    return (
+      <div>
+        <p style={{margin:10, color:primary[500]}}>名前</p>
+        <p style={{margin:10, color:seconary[500]}}>性別</p>
+        <Button variant="raised" color='secondary'>Email</Button>
+      </div>
+    )
+  }
+}
+
+App = withTheme(App) // theme propsを付与
+export default class App
+```
+
+
+# Material UIコンポーネントstyleのオーバライド
+Material UIのコンポーネントのスタイルも基本的にはstyle属性で記述できるのですが、稀にstyleが効かない場合があります。  
+その場合はMaterial-UIコンポーネント自体のclass styleを上書きします。  
+コンポーネント全体を上書きしたい場合はテーマのoverrideにstyleを書きます。  
+
+```index.jsx
+const theme = createMuiTheme({
+  // Material-UIコンポーネントのclassのstyleを上書きする
+  overrides: {
+    MuiButton: {
+      root: {
+        // ボタン内アルファベット文字を大文字変換しない
+        textTransform: 'none',
+      },
+    },
+  },
+})
+```
+
+ピンポイントでMaterial UIコンポーネントのスタイルを上書きしたい場合はwithStylesを使います。  
+上書き対象となるMaterial UIコンポーネントのclasses属性に指定します。  
+
+```App.jsx
+import { withStyles } from '@material-ui/core/styles'
+
+class App extends React.Component {
+  render() {
+    const { classes } = this.props
+
+    return (
+      <AppBar position="static" color="primary">
+        <Toolbar classes={{root: classes.root}} >
+          タイトル
+        </Toolbar>
+      </AppBar>
+    )
+  }
+}
+
+App = withStyles({ // classes propsを付与
+  root: {
+    fontStyle: 'italic',
+    fontSize: 21,
+    minHeight: 64,
+  }
+})(App)
+export default class App
+```
+
+もっと詳細は[こちら](https://material-ui.com/customization/overrides/)
+
+# レスポンシブレイアウト対応
+withWidthを使えば,  
+widthのpropsが画面サイズに合わせて渡ってきます。  
+- [Hidden](https://material-ui.com/layout/hidden/)
+
+`xs < sm < md < lg < xl`の順に横幅の大きさが大きいです。  
+index.jsのcreateMuiThemeのbreakpointsにて上書きしています。  
+md以上は変える必要性があまりない気がしているので大きい値で返ってこないようにしています。  
+
+```index.jsx
+const theme = createMuiTheme({
+  // レスポンシブレイアウト用の指定
+  'breakpoints': {
+    'keys': [
+      'xs',
+      'sm',
+      'md',
+      'lg',
+      'xl',
+    ],
+    'values': {
+      'xs': 360, // スマホ用
+      'sm': 768, // タブレット用
+      'md': 992, // PC用
+      'lg': 1000000000, 
+      'xl': 1000000000,
+    },
+  },
+})
+```
+
+withWidthでコンポーネントをwrapすることで  
+this.props.widthが参照できるようになります。  
+ブラウザの画面サイズを変えることでxs, sm, mdに変わり、再度renderが呼ばれます。  
+
+```App.jsx
+import withWidth from '@material-ui/core/withWidth'
+
+class App extends React.Component {
+  render () {
+    const { width } = this.props
+
+    return (
+        <AppBar>
+          <Toolbar >
+            タイトル({ width === 'xs' ? 'スマホ' : 'PC'})
+          </Toolbar>
+        </AppBar>
+    )
+  }
+}
+
+App = withWidth()(App) // width propsを付与
+export default class App
+```
+
+# アイコン
+Material UIのアイコンに関しては下記ページのアイコンが使えます。  
+[Material icons](https://material.io/tools/icons/?style=baseline)
+  
+今回はメールのアイコンを使っています。  
+emailというアイコン名になっているので、  
+次のように先頭大文字でメールアイコンを読み込みできます。  
+
+```App.jsx
+import { Email } from '@material-ui/icons'
+
+export default class App extends React.Component {
+  render() {
+    return <Email/>
+  }
+}
+```
+
+# テーマ外の色を使う
+アイコン色など、テーマ外の色をピンポイントで使いたい場合もあると思います。  
+その場合は、`@material-ui/core/colors`をimportすることで直接定義色を参照できます。  
+ちなみに、アイコンの背景色はcolorsで変更できます。  
 
 ```
-$ yarn add --dev webpack-dev-server
-$ npx webpack-dev-server
-Project is running at http://localhost:8080/
-```
+import { orange } from '@material-ui/core/colors'
 
+export default class App extends React.Component {
+  render() {
+    return <Email style={{color: orange[200]}} />
+  }
+}
+```
