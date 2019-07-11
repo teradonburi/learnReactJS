@@ -1,5 +1,6 @@
 import React from 'react'
-import { connect } from 'react-redux';
+import { hot } from 'react-hot-loader'
+import { connect } from 'react-redux'
 import { load } from './user'
 
 import { withTheme, withStyles } from '@material-ui/core/styles'
@@ -105,5 +106,7 @@ App = connect(
   // propsに付与するactions
   { load }
 )(App)
+
+App = hot(module)(App)
 
 export default App
