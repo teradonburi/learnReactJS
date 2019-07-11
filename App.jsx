@@ -36,7 +36,7 @@ class App extends React.Component {
 
   render () {
     const { users, theme, classes, width } = this.props
-    const { primary, secondary } = theme.palette
+    const { primary } = theme.palette
 
     // 初回はnullが返ってくる（initialState）、処理完了後に再度結果が返ってくる
     console.log(users)
@@ -52,10 +52,10 @@ class App extends React.Component {
           return (
             // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
             <Card key={user.email} style={{marginTop:'10px'}}>
-              <CardContent style={{color:'#408040'}}>
+              <CardContent className={classes.card} >
                 <Avatar src={user.picture.thumbnail} />
                 <p style={{margin:10, color:primary[500]}}>{'名前:' + user.name.first + ' ' + user.name.last} </p>
-                <p style={{margin:10, color:secondary[500]}}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
+                <p className={classes.gender}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
                 <div style={{textAlign: 'right'}} >
                   <Button variant="contained" color='secondary' onClick={() => this.handleClickOpen(user)}><Email style={{marginRight: 5, color: orange[200]}}/>Email</Button>
                 </div>
@@ -77,13 +77,24 @@ class App extends React.Component {
 
 App = withWidth()(App) // width propsを付与
 App = withTheme(App) // theme propsを付与
-App = withStyles({ // classes propsを付与
+App = withStyles((theme) => ({ // classes propsを付与
   root: {
     fontStyle: 'italic',
     fontSize: 21,
     minHeight: 64,
+    // 画面サイズがモバイルサイズのときのスタイル
+    [theme.breakpoints.down('xs')]: {
+      fontStyle: 'normal',
+    }
+  },
+  card: {
+    background: props => `${props.bgcolor}` // props経由でstyleを渡す
+  },
+  gender: {
+    margin: 10,
+    color: theme.palette.secondary[500], // themeカラーを参照
   }
-})(App)
+}))(App)
 
 // connectでwrap
 App = connect(

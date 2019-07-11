@@ -90,7 +90,7 @@ ReactDOM.render(
   // MuiThemeProviderにテーマの指定をする
   <MuiThemeProvider theme={theme}>
     <Provider store={store}>
-      <App />
+      <App bgcolor='#a0f0a0' />
     </Provider>
   </MuiThemeProvider>,
   document.getElementById('root')

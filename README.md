@@ -107,7 +107,7 @@ ReactDOM.render(
   // MuiThemeProviderにテーマの指定をする
   <MuiThemeProvider theme={theme}>
     <Provider store={store}>
-      <App />
+      <App bgcolor='#a0f0a0' />
     </Provider>
   </MuiThemeProvider>,
   document.getElementById('root')
@@ -155,7 +155,7 @@ class App extends React.Component {
 
   render () {
     const { users, theme, classes, width } = this.props
-    const { primary, secondary } = theme.palette
+    const { primary } = theme.palette
 
     // 初回はnullが返ってくる（initialState）、処理完了後に再度結果が返ってくる
     console.log(users)
@@ -171,10 +171,10 @@ class App extends React.Component {
           return (
             // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
             <Card key={user.email} style={{marginTop:'10px'}}>
-              <CardContent style={{color:'#408040'}}>
+              <CardContent className={classes.card} >
                 <Avatar src={user.picture.thumbnail} />
                 <p style={{margin:10, color:primary[500]}}>{'名前:' + user.name.first + ' ' + user.name.last} </p>
-                <p style={{margin:10, color:secondary[500]}}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
+                <p className={classes.gender}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
                 <div style={{textAlign: 'right'}} >
                   <Button variant="contained" color='secondary' onClick={() => this.handleClickOpen(user)}><Email style={{marginRight: 5, color: orange[200]}}/>Email</Button>
                 </div>
@@ -196,13 +196,24 @@ class App extends React.Component {
 
 App = withWidth()(App) // width propsを付与
 App = withTheme(App) // theme propsを付与
-App = withStyles({ // classes propsを付与
+App = withStyles((theme) => ({ // classes propsを付与
   root: {
     fontStyle: 'italic',
     fontSize: 21,
     minHeight: 64,
+    // 画面サイズがモバイルサイズのときのスタイル
+    [theme.breakpoints.down('xs')]: {
+      fontStyle: 'normal',
+    }
+  },
+  card: {
+    background: props => `${props.bgcolor}` // props経由でstyleを渡す
+  },
+  gender: {
+    margin: 10,
+    color: theme.palette.secondary[500], // themeカラーを参照
   }
-})(App)
+}))(App)
 
 // connectでwrap
 App = connect(
@@ -301,58 +312,6 @@ App = withTheme(App) // theme propsを付与
 export default class App
 ```
 
-
-# Material UIコンポーネントstyleのオーバライド
-Material UIのコンポーネントのスタイルも基本的にはstyle属性で記述できるのですが、稀にstyleが効かない場合があります。  
-その場合はMaterial-UIコンポーネント自体のclass styleを上書きします。  
-コンポーネント全体を上書きしたい場合はテーマのoverrideにstyleを書きます。  
-
-```index.jsx
-const theme = createMuiTheme({
-  // Material-UIコンポーネントのclassのstyleを上書きする
-  overrides: {
-    MuiButton: {
-      root: {
-        // ボタン内アルファベット文字を大文字変換しない
-        textTransform: 'none',
-      },
-    },
-  },
-})
-```
-
-ピンポイントでMaterial UIコンポーネントのスタイルを上書きしたい場合はwithStylesを使います。  
-上書き対象となるMaterial UIコンポーネントのclasses属性に指定します。  
-
-```App.jsx
-import { withStyles } from '@material-ui/core/styles'
-
-class App extends React.Component {
-  render() {
-    const { classes } = this.props
-
-    return (
-      <AppBar position="static" color="primary">
-        <Toolbar classes={{root: classes.root}} >
-          タイトル
-        </Toolbar>
-      </AppBar>
-    )
-  }
-}
-
-App = withStyles({ // classes propsを付与
-  root: {
-    fontStyle: 'italic',
-    fontSize: 21,
-    minHeight: 64,
-  }
-})(App)
-export default class App
-```
-
-もっと詳細は[こちら](https://material-ui.com/customization/overrides/)
-
 # レスポンシブレイアウト対応
 withWidthを使えば,  
 widthのpropsが画面サイズに合わせて渡ってきます。  
@@ -406,6 +365,105 @@ class App extends React.Component {
 }
 
 App = withWidth()(App) // width propsを付与
+export default class App
+```
+
+# Material UIコンポーネントstyleのオーバライド
+Material UIのコンポーネントのスタイルも基本的にはstyle属性で記述できるのですが、稀にstyleが効かない場合があります。  
+その場合はMaterial-UIコンポーネント自体のclass styleを上書きします。  
+コンポーネント全体を上書きしたい場合はテーマのoverrideにstyleを書きます。  
+
+```index.jsx
+const theme = createMuiTheme({
+  // Material-UIコンポーネントのclassのstyleを上書きする
+  overrides: {
+    MuiButton: {
+      root: {
+        // ボタン内アルファベット文字を大文字変換しない
+        textTransform: 'none',
+      },
+    },
+  },
+})
+```
+
+withStylesでwrapすることでclassesのpropsを参照できるようになります。  
+Material UIコンポーネント自体のスタイルを上書きしたい場合やDOMにclass属性を割り当てたいときに使います。  
+上書き対象となるMaterial UIコンポーネントのclasses属性に指定します。  
+withStyles内部でthemeも参照できるため、themeのカラーパレットを参照したり、  
+`theme.breakpoints.down`を使うことでメディアクエリのような、画面サイズを変更したときのスタイルをclass属性で定義することが出来ます。  
+
+```App.jsx
+import { withStyles } from '@material-ui/core/styles'
+
+class App extends React.Component {
+  render() {
+    const { classes } = this.props
+
+    return (
+      <div>
+        <AppBar position="static" color="primary">
+          <Toolbar classes={{root: classes.root}} >
+            タイトル
+          </Toolbar>
+        </AppBar>
+        <Card key={user.email} style={{marginTop:'10px'}}>
+          <CardContent className={classes.card} >
+            <p className={classes.gender}>{'性別:' + (user.gender == 'male' ? '男性' : '女性')}</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+}
+
+App = withStyles((theme) => ({ // classes propsを付与
+  root: {
+    fontStyle: 'italic',
+    fontSize: 21,
+    minHeight: 64,
+    // 画面サイズがモバイルサイズのときのスタイル
+    [theme.breakpoints.down('xs')]: {
+      fontStyle: 'normal',
+    }
+  },
+  card: {
+    background: props => `${props.bgcolor}` // props経由でstyleを渡す(Material-UI v4の新機能)
+  },
+  gender: {
+    margin: 10,
+    color: theme.palette.secondary[500], // themeカラーを参照
+  }
+}))(App)
+export default class App
+```
+
+また、Material-UI v4からprops経由でstyleを渡すことが出来るようになりました。  
+今回の例だとbgcolorはAppコンポーネントのpropsとしてindex.jsxから渡しています。  
+
+```
+  <App bgcolor='#a0f0a0' />
+```
+
+## withStylesでwithThemeを同時に付与する
+withStylesの第２引数のoptionに`{withTheme: true}`を渡すことで  
+withThemeでwrapしなくてもthemeのpropsをコンポーネントに付与することが出来ます。  
+
+```
+class App extends React.Component {
+
+  render () {
+    const { theme, classes } = this.props
+    const { primary } = theme.palette
+
+    return <div />
+  }
+}
+
+// App = withTheme(App) // withThemeが不要になる
+App = withStyles((theme) => ({ // classes propsを付与
+  
+}, {withTheme: true}))(App)
 export default class App
 ```
 
