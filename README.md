@@ -1,92 +1,163 @@
-# React Hot Loaderによる自動リロード
-ソースコード変更時のwebpackビルドを  
-`webpack --watch`により行っていましたが  
-React Hot Loaderの設定を行うことで  
-ソースコード変更時にwebpackビルドしてくれる上にビルド完了後にブラウザを自動リロードしてくれます。  
-パッケージにwebpack-dev-server、react-hot-loaderを追加します。  
+# ReactRouterで画面遷移と遷移履歴の管理
+
+React Routerを使うと擬似的な画面遷移を行うことができます。  
+下記コマンドでreact-router-domをインストールします。  
 
 ```
-$ yarn add --dev webpack-dev-server react-hot-loader @babel/polyfill --ignore-engines
+$ yarn add --dev react-router-dom --ignore-engines
 ```
 
-package.jsonにwebpack-dev-server起動用のスクリプトを追加します。
-
-```
-{
-  "scripts": {
-    "dev": "webpack-dev-server --mode development"
-  },
-}
-```
-
-webpack.config.jsにwebpack-dev-serverとreact-hot-loaderの設定を追加します。  
+webpack.config.jsonのdevServerにhistoryApiFallbackをtrueにします。  
+後で使うhistory APIのブラウザリロード時に対応します。
 
 ```webpack.config.js
-const path = require('path')
-const webpack = require('webpack')
-
-module.exports = {
-  mode: 'development', // 開発モード
-  devtool: 'cheap-module-source-map', // ソースマップファイル追加 
-  name: 'bundle',
-  entry: [
-    '@babel/polyfill', // 古いブラウザへの互換性をもたせる
-    'react-hot-loader/patch',
-    __dirname + '/index', // エントリポイントのjsxファイル
-  ],
   // React Hot Loader用のデバッグサーバ(webpack-dev-server)の設定
   devServer: {
-    contentBase: __dirname, // index.htmlの格納場所
-    inline: true, // ソース変更時リロードモード
-    hot: true, // HMR(Hot Module Reload)モード
-    port: 7070, // 起動ポート
-  },
-  output: {
-    publicPath: '/dist', // distフォルダ以下を公開パスに指定
-    filename: 'bundle.js',
-  },
-  plugins: [
-    new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
-    new webpack.HotModuleReplacementPlugin() // HMR(Hot Module Reload)プラグイン利用 
-  ],
-  module: {
-    rules: [{
-      test: /\.(js|jsx)$/, // 拡張子がjsかjsxで
-      exclude: /node_modules/, // node_modulesフォルダ配下は除外
-      include: __dirname,// client配下のJSファイルが対象
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-env', '@babel/preset-react'],
-          plugins: [
-            ['@babel/plugin-proposal-class-properties', { loose: true }], // クラスのdefaultProps、アローファンクション用
-            'react-hot-loader/babel', // react-hot-loader用
-          ],
-        },
-      },
-    }]
+    historyApiFallback: true, // history APIが404エラーを返す時、index.htmlに遷移(ブラウザリロード時など) 
+```
+
+App.jsxにてルーティングの指定をします。  
+今回は  
+
+* ユーザページ
+* TODOページ
+* NotFoundページ
+
+を作成します。  
+ルーティングをするためにはBrowserRouterコンポーネントで全体を囲みます。  
+
+```App.js
+import React from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { hot } from 'react-hot-loader'
+
+import NotFound from './NotFound.jsx'
+import UserPage from './UserPage.jsx'
+import TodoPage from './TodoPage.jsx'
+
+class App extends React.Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={UserPage} />
+          <Route path="/todo" component={TodoPage} /> 
+          {/* それ以外のパス */}
+          <Route component={NotFound} />　
+        </Switch>
+      </BrowserRouter>
+    )
+  }
+}
+
+export default hot(module)(App)
+```
+
+Switchコンポーネントで対象のパスをグルーピングします。
+exactはパスの完全一致指定です。この指定がないと/todoでもUserPageのコンポネントがレンダリングされてしまいます。
+`/`や`/todo`以外のときはパス未指定のNotFoundコンポーネントが呼ばれます。
+
+```NotFound.jsx
+import React from 'react'
+
+const NotFound = () => <div>NotFound</div>
+
+export default NotFound
+```
+
+UserPage.jsxです。  
+ほぼ変わりませんがヘッダー部分にTodoリストページに遷移するためのhandlePageMoveメソッドを追加しています。  
+
+```UserPage.jsx
+// 略
+
+export default class UserPage extends React.Component {
+
+  // 略
+
+  handlePageMove(path) {
+    this.props.history.push(path)
+  }
+  
+  render () {
+    const { users, theme, classes, width, location  } = this.props
+    const { primary } = theme.palette
+
+    // locationにはページのパス、urlパラメータなどが渡ってくる（パラメータをみて制御したい場合などに使う）
+    console.log(location)
+
+    // 初回はnullが返ってくる（initialState）、処理完了後に再度結果が返ってくる
+    // console.log(users)
+    return (
+      <div>
+        <AppBar position="static" color="primary">
+          <Toolbar classes={{root: classes.root}}>
+            ユーザページ({ width === 'xs' ? 'スマホ' : 'PC'})
+            <Button style={{color:'#fff',position:'absolute',top:15,right:0}} onClick={()=> this.handlePageMove('/todo')}>TODOページへ</Button>
+          </Toolbar>
+        </AppBar>
+        {/* 略 */}
+      </div>
+    )
   }
 }
 ```
 
-App.jsxにReact Hot Loaderの設定を追加します。  
-hotモジュールでApp Componentをwrapします。  
-
-```App.jsx
-import { hot } from 'react-hot-loader'
-
-export default class App extends React.Component {
-  ...
-} 
-
-App = hot(module)(App)
+Router直下のコンポーネントはprops.match、props.location、props.historyが使えるようになります。  
+historyオブジェクトにて画面遷移ができるようになります。  
+また、遷移履歴もhistoryオブジェクトで一元管理されているため、ブラウザバックなども有効に働きます。  
+URL部分を取得したい場合はprops.matchを使います。  
 
 ```
-
-次のコマンドでwebpack-dev-serverが7070ポートで起動できます。
-
+  handlePageMove(path) {
+    // historyオブジェクトを使うことでページ遷移することが出来る
+    this.props.history.push(path)
+  }
 ```
-$ yarn dev
-```
 
-App.jsxなどを編集して保存するとブラウザが更新されます。（ビルド＆部分リロード（HMR））
+TodoPage.jsxにはヘッダー部分にユーザページへ戻るリンクがあります。  
+Router直下でないコンポーネントでもwithRouterでwrapすることでhistory, locationを参照することができます  
+
+```TodoPage.jsx
+import React from 'react'
+import { AppBar, Toolbar, Button } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
+import { withRouter } from 'react-router-dom'
+
+class TodoPage extends React.Component {
+
+  render () {
+    const { classes } = this.props
+    
+    return (
+      <div>
+        <AppBar position="static" color="primary">
+          <Toolbar classes={{root: classes.root}}>
+            TODOページ
+            <BackButton>ユーザページへ</BackButton>
+          </Toolbar>
+        </AppBar>
+      </div>
+    )
+  }
+}
+
+TodoPage = withStyles({
+  root: {
+    fontStyle: 'italic',
+    fontSize: 21,
+    minHeight: 64,
+  }
+})(TodoPage)
+
+let BackButton = ({history, location}) => {
+  console.log(location)
+  // history.goBackはブラウザの戻るボタンと等価（ブラウザ履歴を一つさかのぼる）
+  return <Button style={{color:'#fff',position:'absolute',top:15,right:0}} onClick={()=> history.goBack()}>ユーザページへ</Button>
+}
+
+// Router直下でないコンポーネントでもwithRouterでwrapすることでhistory, locationを参照することができる
+BackButton = withRouter(BackButton)
+
+export default TodoPage
+```
