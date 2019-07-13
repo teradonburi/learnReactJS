@@ -126,13 +126,6 @@ class TodoPage extends React.Component {
   }
 }
 
-TodoPage = connect(
-  // propsに受け取るreducerのstate
-  null,
-  // propsに付与するactions
-  { add }
-)(TodoPage)
-
 let BackButton = ({history, location}) => {
   console.log(location)
   // history.goBackはブラウザの戻るボタンと等価（ブラウザ履歴を一つさかのぼる）
@@ -142,4 +135,9 @@ let BackButton = ({history, location}) => {
 // Router直下でないコンポーネントでもwithRouterでwrapすることでhistory, locationを参照することができる
 BackButton = withRouter(BackButton)
 
-export default TodoPage
+export default connect(
+  // propsに受け取るreducerのstate
+  null,
+  // propsに付与するactions
+  { add }
+)(TodoPage)
