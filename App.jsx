@@ -4,9 +4,9 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { hot } from 'react-hot-loader'
 import loadable from '@loadable/component'
 
-const UserPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'userpage' */ './components/UserPage'))
-const TodoPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'todopage' */ './components/TodoPage'))
-const NotFound = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'notfound' */ './components/NotFound'))
+const UserPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'userpage' */ './UserPage.jsx'))
+const TodoPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'todopage' */ './TodoPage.jsx'))
+const NotFound = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'notfound' */ './NotFound.jsx'))
 
 const App = () => (
   <BrowserRouter>

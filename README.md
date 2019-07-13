@@ -30,9 +30,9 @@ webpackChunkNameのmagicコメントを指定することでwebpackでコンパ�
 prefetch、preload等の先読みの技術は[この記事](https://webtan.impress.co.jp/e/2017/02/20/24816)が参考になります。  
 
 ```
-const UserPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'userpage' */ './components/UserPage'))
-const TodoPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'todopage' */ './components/TodoPage'))
-const NotFound = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'notfound' */ './components/NotFound'))
+const UserPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'userpage' */ './UserPage.jsx'))
+const TodoPage = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'todopage' */ './TodoPage.jsx'))
+const NotFound = loadable(() => import(/* webpackPrefetch: true, webpackChunkName: 'notfound' */ './NotFound.jsx'))
 ```
 
 上記マジックコメントで指定すれば、webpackリリースビルド時に  
