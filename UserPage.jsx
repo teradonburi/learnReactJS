@@ -1,5 +1,4 @@
 import React from 'react'
-import { hot } from 'react-hot-loader'
 import { connect } from 'react-redux'
 import { load } from './user'
 
@@ -115,7 +114,5 @@ UserPage = connect(
   // propsに付与するactions
   { load }
 )(UserPage)
-
-UserPage = hot(module)(UserPage)
 
 export default UserPage
