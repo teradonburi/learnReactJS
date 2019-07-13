@@ -222,7 +222,7 @@ export default TodoPage
 yupでフォームデータのデータ型とvalidation定義を行うことが出来ます。  
 今回の場合、すべて文字列なのでYup.string()でデータ型を定義します。  
 requiredで必須属性を指定します。引数はエラー時のメッセージとなります。  
-emailはメールフォーマットのバリデーションチェックを行います。 
+emailはメールフォーマットのバリデーションチェックを行います。  
 作成したスキーマはFormikのvalidationSchema属性に指定します。  
 FormikのinitialValuesにはフォームデータの初期値を指定します。  
 
