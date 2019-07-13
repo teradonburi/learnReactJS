@@ -15,7 +15,7 @@ ReactJS勉強会用資料を各ブランチにまとめてます。
 - [MaterialUI](https://github.com/teradonburi/learnReactJS/tree/MaterialUI):マテリアルデザインでのUI実装 
 - [ReactHotLoader](https://github.com/teradonburi/learnReactJS/tree/ReactHotLoader):ReactHotLoaderでの自動リロード 
 - [ReactRouter](https://github.com/teradonburi/learnReactJS/tree/ReactRouter):ReactJSでの画面遷移(SPA)
-- [Formik](https://github.com/teradonburi/learnReactJS/tree/Formik):Formikでのフォームvalidation
+- [Formik](https://github.com/teradonburi/learnReactJS/tree/Formik):Formikでのフォーム送信
 - [ESLint](https://github.com/teradonburi/learnReactJS/tree/ESLint):ESLintでのコードチェック
 - [loadable-components](https://github.com/teradonburi/learnReactJS/tree/loadable-components):dynamic import（Code Spliting）
 - [SSR](https://github.com/teradonburi/learnReactJS/tree/SSR):サーバサイドレンダリング（Server Side Rendering）
