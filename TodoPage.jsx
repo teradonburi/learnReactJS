@@ -21,10 +21,10 @@ const SignupSchema = Yup.object().shape({
 })
 
 const FormTextField = ({field, form: { touched, errors }, ...props}) => (
-  <TextField 
-    error={touched[field.name] && !!errors[field.name]} 
+  <TextField
+    error={touched[field.name] && !!errors[field.name]}
     variant='outlined'
-    helperText={touched[field.name] && errors[field.name]} 
+    helperText={touched[field.name] && errors[field.name]}
     name={field.name}
     value={field.value}
     onChange={field.onChange}
@@ -63,9 +63,9 @@ class TodoPage extends React.Component {
       firstname: values.firstname,
       lastname: values.lastname,
       gender: values.gender,
-      email: values.email
+      email: values.email,
     }
-    this.props.add(user).then( () => alert('送信完了')) 
+    this.props.add(user).then(() => alert('送信完了'))
   }
 
   render () {
@@ -75,7 +75,7 @@ class TodoPage extends React.Component {
       },
       select: {
         minWidth: 100,
-      }
+      },
     }
 
     return (
@@ -86,7 +86,7 @@ class TodoPage extends React.Component {
             <BackButton>ユーザページへ</BackButton>
           </Toolbar>
         </AppBar>
-        <Card style={{padding:10}}>
+        <Card style={{padding: 10}}>
           <Formik
             initialValues={{
               firstname: '',
@@ -116,7 +116,7 @@ class TodoPage extends React.Component {
                 <div style={{marginBottom: 10}}>
                   <Field name="email" type="email" component={FormTextField} placeholder='メールアドレス' />
                 </div>
-                <Button style={{marginTop:10}} variant='contained' type="submit" disabled={isSubmitting}>送信</Button>
+                <Button style={{marginTop: 10}} variant='contained' type="submit" disabled={isSubmitting}>送信</Button>
               </Form>
             )}
           </Formik>
@@ -126,20 +126,18 @@ class TodoPage extends React.Component {
   }
 }
 
-TodoPage = connect(
-  // propsに受け取るreducerのstate
-  null,
-  // propsに付与するactions
-  { add }
-)(TodoPage)
-
 let BackButton = ({history, location}) => {
   console.log(location)
   // history.goBackはブラウザの戻るボタンと等価（ブラウザ履歴を一つさかのぼる）
-  return <Button style={{color:'#fff',position:'absolute',top:15,right:0}} onClick={()=> history.goBack()}>ユーザページへ</Button>
+  return <Button style={{color: '#fff', position: 'absolute', top: 15, right: 0}} onClick={() => history.goBack()}>ユーザページへ</Button>
 }
 
 // Router直下でないコンポーネントでもwithRouterでwrapすることでhistory, locationを参照することができる
 BackButton = withRouter(BackButton)
 
-export default TodoPage
+export default connect(
+  // propsに受け取るreducerのstate
+  null,
+  // propsに付与するactions
+  { add }
+)(TodoPage)
