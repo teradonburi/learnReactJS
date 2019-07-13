@@ -8,7 +8,7 @@ $ yarn add --dev react-router-dom --ignore-engines
 ```
 
 webpack.config.jsonのdevServerにhistoryApiFallbackをtrueにします。  
-後で使うhistory APIのブラウザリロード時に対応します。
+後で使うhistory APIのブラウザリロード時に対応します。  
 
 ```webpack.config.js
   // React Hot Loader用のデバッグサーバ(webpack-dev-server)の設定
@@ -53,9 +53,9 @@ class App extends React.Component {
 export default hot(module)(App)
 ```
 
-Switchコンポーネントで対象のパスをグルーピングします。
-exactはパスの完全一致指定です。この指定がないと/todoでもUserPageのコンポネントがレンダリングされてしまいます。
-`/`や`/todo`以外のときはパス未指定のNotFoundコンポーネントが呼ばれます。
+Switchコンポーネントで対象のパスをグルーピングします。  
+exactはパスの完全一致指定です。この指定がないと/todoでもUserPageのコンポネントがレンダリングされてしまいます。  
+`/`や`/todo`以外のときはパス未指定のNotFoundコンポーネントが呼ばれます。  
 
 ```NotFound.jsx
 import React from 'react'
