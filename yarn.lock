@@ -659,7 +659,7 @@
     "@babel/plugin-transform-react-jsx-self" "^7.0.0"
     "@babel/plugin-transform-react-jsx-source" "^7.0.0"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.5":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.0", "@babel/runtime@^7.4.4", "@babel/runtime@^7.4.5":
   version "7.5.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.5.4.tgz#cb7d1ad7c6d65676e66b47186577930465b5271b"
   dependencies:
@@ -728,6 +728,13 @@
 "@emotion/hash@^0.7.1":
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.7.2.tgz#53211e564604beb9befa7a4400ebf8147473eeef"
+
+"@loadable/component@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.yarnpkg.com/@loadable/component/-/component-5.10.1.tgz#09613e46d409ffacb3b4403658ed90adbc01ba24"
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    hoist-non-react-statics "^3.3.0"
 
 "@material-ui/core@^4.2.0":
   version "4.2.0"
