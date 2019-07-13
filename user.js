@@ -44,7 +44,7 @@ export function load() {
 
 export function add(user) {
   // ユーザを追加
-  return (dispatch, getState, client) => {
+  return (dispatch) => {
     // 疑似ユーザ作成（本来はサーバ送信＆DB保存）
     const data = {"results":[{"gender":user.gender,"name":{"first":user.firstname,"last":user.lastname},"email":user.email,"picture":{"thumbnail":"https://avatars1.githubusercontent.com/u/771218?s=460&v=4"}}]}
     const results = data.results[0]
