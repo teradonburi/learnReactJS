@@ -22,7 +22,6 @@ package.jsonにwebpack-dev-server起動用のスクリプトを追加します�
 webpack.config.jsにwebpack-dev-serverとreact-hot-loaderの設定を追加します。  
 
 ```webpack.config.js
-const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
