@@ -20,24 +20,28 @@ const SignupSchema = Yup.object().shape({
     .required('必須項目です'),
 })
 
-const MyTextField = ({field, form: { touched, errors }, ...props}) => (
+const FormTextField = ({field, form: { touched, errors }, ...props}) => (
   <TextField 
     error={touched[field.name] && !!errors[field.name]} 
     variant='outlined'
     helperText={touched[field.name] && errors[field.name]} 
-    {...field}
+    name={field.name}
+    value={field.value}
+    onChange={field.onChange}
+    onBlur={field.onBlur}
     {...props}
   />
 )
 
 // Select
-const MySelect = ({label, children, field, form: { touched, errors }, ...props}) => (
+const FormSelect = ({label, children, field, form: { touched, errors }, ...props}) => (
   <FormControl error={!!errors[field.name]}>
     <InputLabel>{label}</InputLabel>
     <Select
       name={field.name}
       value={field.value}
       onChange={field.onChange}
+      onBlur={field.onBlur}
       {...props}
     >
       {children}
@@ -97,20 +101,20 @@ class TodoPage extends React.Component {
               <Form>
                 <div style={{display: 'flex'}}>
                   <div style={{marginRight: 10, marginBottom: 10}}>
-                    <Field name="firstname" component={MyTextField} placeholder='姓' />
+                    <Field name="firstname" component={FormTextField} placeholder='姓' />
                   </div>
                   <div>
-                    <Field name="lastname" component={MyTextField} placeholder='名' />
+                    <Field name="lastname" component={FormTextField} placeholder='名' />
                   </div>
                 </div>
                 <div style={{marginBottom: 10}}>
-                  <Field name="gender" component={MySelect} style={styles.select} label='性別' >
+                  <Field name="gender" component={FormSelect} style={styles.select} label='性別' >
                     <MenuItem value="male">男性</MenuItem>
                     <MenuItem value="female">女性</MenuItem>
                   </Field>
                 </div>
                 <div style={{marginBottom: 10}}>
-                  <Field name="email" type="email" component={MyTextField} placeholder='メールアドレス' />
+                  <Field name="email" type="email" component={FormTextField} placeholder='メールアドレス' />
                 </div>
                 <Button style={{marginTop:10}} variant='contained' type="submit" disabled={isSubmitting}>送信</Button>
               </Form>
