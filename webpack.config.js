@@ -5,7 +5,6 @@ module.exports = {
   devtool: 'cheap-module-source-map', // ソースマップファイル追加 
   name: 'bundle',
   entry: [
-    '@babel/polyfill', // 古いブラウザへの互換性をもたせる
     'react-hot-loader/patch',
     __dirname + '/index.jsx', // エントリポイントのjsxファイル
   ],
