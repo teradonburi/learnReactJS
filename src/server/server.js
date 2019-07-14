@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   app.use(
     webpackDevMiddleware(compiler, {
-      logLevel: 'silent',
+      logLevel: 'error',
       publicPath: '/dist/web',
       writeToDisk(filePath) {
         return /dist\/node\//.test(filePath) || /loadable-stats/.test(filePath)
@@ -39,8 +39,7 @@ const webStats = path.resolve(
 
 // Redux
 import { Provider } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk'
+import { createStore } from 'redux'
 // Material-UI SSR
 import { ServerStyleSheets, ThemeProvider } from '@material-ui/styles'
 // material-ui theme
@@ -56,11 +55,10 @@ app.get(
 
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
-
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
     const initialData = { user: {} }
     // Redux Storeの作成(initialDataには各Componentが参照するRedux Storeのstateを代入する)
-    const store = createStore(reducer, initialData, applyMiddleware(thunk))
+    const store = createStore(reducer, initialData)
 
     const sheets = new ServerStyleSheets()
     const context = {}
@@ -99,5 +97,4 @@ ${webExtractor.getStyleTags()}
   },
 )
 
-// eslint-disable-next-line no-console
-app.listen(9000, () => console.log('Server started http://localhost:9000'))
+app.listen(7070, () => console.log('Server started http://localhost:7070'))
