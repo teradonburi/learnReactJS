@@ -194,9 +194,12 @@ class App extends React.Component {
   }
 }
 
-App = withWidth()(App) // width propsを付与
-App = withTheme(App) // theme propsを付与
-App = withStyles((theme) => ({ // classes propsを付与
+// width propsを付与
+export default withWidth()(
+// theme propsを付与
+withTheme(
+// classes propsを付与
+withStyles((theme) => ({ 
   root: {
     fontStyle: 'italic',
     fontSize: 21,
@@ -213,10 +216,9 @@ App = withStyles((theme) => ({ // classes propsを付与
     margin: 10,
     color: theme.palette.secondary[500], // themeカラーを参照
   }
-}))(App)
-
+}))(
 // connectでwrap
-App = connect(
+connect(
   // propsに受け取るreducerのstate
   state => ({
     users: state.user.users
@@ -224,8 +226,7 @@ App = connect(
   // propsに付与するactions
   { load }
 )(App)
-
-export default App
+)))
 ```
 
 Material-UIの各コンポーネントに関しては  
@@ -308,8 +309,7 @@ class App extends React.Component {
   }
 }
 
-App = withTheme(App) // theme propsを付与
-export default class App
+export default class withTheme(App) // theme propsを付与
 ```
 
 # レスポンシブレイアウト対応
@@ -364,8 +364,7 @@ class App extends React.Component {
   }
 }
 
-App = withWidth()(App) // width propsを付与
-export default class App
+export default class withWidth()(App) // width propsを付与
 ```
 
 # Material UIコンポーネントstyleのオーバライド
@@ -417,7 +416,7 @@ class App extends React.Component {
   }
 }
 
-App = withStyles((theme) => ({ // classes propsを付与
+export default class withStyles((theme) => ({ // classes propsを付与
   root: {
     fontStyle: 'italic',
     fontSize: 21,
@@ -435,7 +434,6 @@ App = withStyles((theme) => ({ // classes propsを付与
     color: theme.palette.secondary[500], // themeカラーを参照
   }
 }))(App)
-export default class App
 ```
 
 また、Material-UI v4からprops経由でstyleを渡すことが出来るようになりました。  
@@ -460,11 +458,9 @@ class App extends React.Component {
   }
 }
 
-// App = withTheme(App) // withThemeが不要になる
-App = withStyles((theme) => ({ // classes propsを付与
+export default class withStyles((theme) => ({ // classes propsを付与
   
 }, {withTheme: true}))(App)
-export default class App
 ```
 
 # アイコン
