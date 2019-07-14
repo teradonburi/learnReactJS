@@ -2,7 +2,8 @@ module.exports = {
   'parser': 'babel-eslint',
   'env': {
     'browser': true, // ブラウザ
-    'es6': true
+    'es6': true, // ES6
+    'node': true // NodeJS
   },
   // reactプラグイン
   'extends': [
@@ -18,7 +19,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'settings': { 
-    'react': { 'version' : '16.5.2' }
+    'react': { 'version' : 'detect' }
   },
   // reactプラグイン使用
   'plugins': [
@@ -27,12 +28,6 @@ module.exports = {
   'globals': {
   },
   'rules': {
-    // インデントルール
-    'indent': [
-      'error',
-      2,
-      { 'SwitchCase': 1 }
-    ],
     // 改行コード
     'linebreak-style': [
       'error',

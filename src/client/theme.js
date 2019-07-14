@@ -1,22 +1,6 @@
-import React  from 'react'
-import ReactDOM from 'react-dom'
-import { createStore, applyMiddleware, compose } from 'redux'
-import { Provider } from 'react-redux'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import client from 'axios'
-import thunk from 'redux-thunk'
+import { createMuiTheme } from '@material-ui/core/styles'
 
-import App from './App.jsx'
-import reducer from './reducer'
-
-// redux-devtoolの設定
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-// axiosをthunkの追加引数に加える
-const thunkWithClient = thunk.withExtraArgument(client)
-// redux-thunkをミドルウェアに適用
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunkWithClient)))
-
-// Material-UIテーマを上書きする
+// Material-UIテーマを作成
 const theme = createMuiTheme({
   // カラーパレット
   palette: {
@@ -71,7 +55,7 @@ const theme = createMuiTheme({
       'xs': 360, // スマホ用
       'sm': 768, // タブレット用
       'md': 992, // PC用
-      'lg': 1000000000, 
+      'lg': 1000000000,
       'xl': 1000000000,
     },
   },
@@ -86,12 +70,4 @@ const theme = createMuiTheme({
   },
 })
 
-ReactDOM.render(
-  // MuiThemeProviderにテーマの指定をする
-  <MuiThemeProvider theme={theme}>
-    <Provider store={store}>
-      <App bgcolor='#a0f0a0' />
-    </Provider>
-  </MuiThemeProvider>,
-  document.getElementById('root')
-)
+export default theme

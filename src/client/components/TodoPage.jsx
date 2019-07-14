@@ -5,7 +5,7 @@ import { red } from '@material-ui/core/colors'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { withRouter } from 'react-router-dom'
-import { add } from './user'
+import { add } from '../modules/user'
 
 // フォームデータの定義をバリデーション付きで行う
 const SignupSchema = Yup.object().shape({
