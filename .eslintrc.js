@@ -18,7 +18,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'settings': { 
-    'react': { 'version' : '16.5.2' }
+    'react': { 'version' : 'detected' }
   },
   // reactプラグイン使用
   'plugins': [
@@ -27,12 +27,6 @@ module.exports = {
   'globals': {
   },
   'rules': {
-    // インデントルール
-    'indent': [
-      'error',
-      2,
-      { 'SwitchCase': 1 }
-    ],
     // 改行コード
     'linebreak-style': [
       'error',
