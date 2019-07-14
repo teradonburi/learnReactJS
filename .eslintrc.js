@@ -27,12 +27,6 @@ module.exports = {
   'globals': {
   },
   'rules': {
-    // インデントルール
-    'indent': [
-      'error',
-      2,
-      { 'SwitchCase': 1 }
-    ],
     // 改行コード
     'linebreak-style': [
       'error',

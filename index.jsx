@@ -71,7 +71,7 @@ const theme = createMuiTheme({
       'xs': 360, // スマホ用
       'sm': 768, // タブレット用
       'md': 992, // PC用
-      'lg': 1000000000, 
+      'lg': 1000000000,
       'xl': 1000000000,
     },
   },
@@ -90,7 +90,7 @@ ReactDOM.render(
   // MuiThemeProviderにテーマの指定をする
   <MuiThemeProvider theme={theme}>
     <Provider store={store}>
-      <App bgcolor='#a0f0a0' />
+      <App />
     </Provider>
   </MuiThemeProvider>,
   document.getElementById('root')
