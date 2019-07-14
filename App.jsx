@@ -9,7 +9,7 @@ import TodoPage from './TodoPage.jsx'
 const App = () => (
   <BrowserRouter>
     <Switch>
-      <Route exact path="/" component={UserPage} />
+      <Route exact path="/" render={(props) => <UserPage {...props} bgcolor='#a0f0a0' />} />
       <Route path="/todo" component={TodoPage} />
       {/* それ以外のパス */}
       <Route component={NotFound} />

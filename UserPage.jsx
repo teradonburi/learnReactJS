@@ -84,9 +84,12 @@ class UserPage extends React.Component {
   }
 }
 
-UserPage = withWidth()(UserPage) // width propsを付与
-UserPage = withTheme(UserPage) // theme propsを付与
-UserPage = withStyles((theme) => ({ // classes propsを付与
+// width propsを付与
+export default withWidth()(
+// theme propsを付与
+withTheme(
+// classes propsを付与
+withStyles((theme) => ({
   root: {
     fontStyle: 'italic',
     fontSize: 21,
@@ -94,25 +97,24 @@ UserPage = withStyles((theme) => ({ // classes propsを付与
     // 画面サイズがモバイルサイズのときのスタイル
     [theme.breakpoints.down('xs')]: {
       fontStyle: 'normal',
-    }
+    },
   },
   card: {
-    background: props => `${props.bgcolor}` // props経由でstyleを渡す
+    background: props => `${props.bgcolor}`, // props経由でstyleを渡す
   },
   gender: {
     margin: 10,
     color: theme.palette.secondary[500], // themeカラーを参照
-  }
-}))(UserPage)
-
+  },
+}))(
 // connectでwrap
-UserPage = connect(
+connect(
   // propsに受け取るreducerのstate
   state => ({
-    users: state.user.users
+    users: state.user.users,
   }),
   // propsに付与するactions
   { load }
 )(UserPage)
+)))
 
-export default UserPage
