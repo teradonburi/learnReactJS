@@ -76,9 +76,14 @@ class App extends React.Component {
   }
 }
 
-App = withWidth()(App) // width propsを付与
-App = withTheme(App) // theme propsを付与
-App = withStyles((theme) => ({ // classes propsを付与
+// HMRの対象にする
+export default hot(module)(
+// width propsを付与
+withWidth()(
+// theme propsを付与
+withTheme(
+// classes propsを付与
+withStyles((theme) => ({ 
   root: {
     fontStyle: 'italic',
     fontSize: 21,
@@ -95,10 +100,9 @@ App = withStyles((theme) => ({ // classes propsを付与
     margin: 10,
     color: theme.palette.secondary[500], // themeカラーを参照
   }
-}))(App)
-
+}))(
 // connectでwrap
-App = connect(
+connect(
   // propsに受け取るreducerのstate
   state => ({
     users: state.user.users
@@ -106,7 +110,4 @@ App = connect(
   // propsに付与するactions
   { load }
 )(App)
-
-App = hot(module)(App)
-
-export default App
+))))
