@@ -47,7 +47,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'settings': { 
-    'react': { 'version' : '16.5.2' }
+    'react': { 'version' : 'detected' }
   },
   // reactプラグイン使用
   'plugins': [
