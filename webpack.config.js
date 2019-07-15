@@ -7,22 +7,36 @@ const loadableBabelPlugin = require('@loadable/babel-plugin')
 const getConfig = (target) => {
   const web = target === 'web'
 
+  const entry = web && process.env.NODE_ENV !== 'production' ?
+  [
+    `./src/client/main-${target}.js`,
+    'webpack-hot-middleware/client',
+  ] : `./src/client/main-${target}.js`
+
+  const plugins = web && process.env.NODE_ENV !== 'production' ?
+  [
+      new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
+      new LoadablePlugin(), // Loadableプラグイン
+      new webpack.HotModuleReplacementPlugin(), // HMR
+  ] :
+  [
+      new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
+      new LoadablePlugin(), // Loadableプラグイン
+  ]
+
   return {
     target,
     mode: 'development', // 開発モード
     name: target,
     devtool: 'cheap-module-source-map', // ソースマップファイル追加
-    entry: `./src/client/main-${target}.js`, // エントリポイントのjsxファイル
+    entry, // エントリポイントのjsxファイル
     output: {
       path: path.join(path.resolve(__dirname, 'public/dist'), target),
       filename: '[name].js',
       publicPath: `/dist/${target}/`,
       libraryTarget: target === 'node' ? 'commonjs2' : undefined,
     },
-    plugins: [
-      new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
-      new LoadablePlugin(), // Loadableプラグイン
-    ],
+    plugins,
     externals: target === 'node' ? ['@loadable/component', nodeExternals()] : undefined,
     module: {
       rules: [{

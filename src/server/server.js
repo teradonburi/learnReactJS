@@ -7,11 +7,11 @@ import { ChunkExtractorManager, ChunkExtractor } from '@loadable/server'
 
 const app = express()
 
-app.use(express.static(path.join(__dirname, '../../public')))
 
 if (process.env.NODE_ENV !== 'production') {
   const webpackConfig = require('../../webpack.config')
   const webpackDevMiddleware = require('webpack-dev-middleware')
+  const webpackHotMiddleware = require('webpack-hot-middleware')
   const webpack = require('webpack')
 
   const compiler = webpack(webpackConfig)
@@ -21,12 +21,17 @@ if (process.env.NODE_ENV !== 'production') {
       logLevel: 'error',
       publicPath: '/dist/web',
       writeToDisk(filePath) {
-        return /dist\/node\//.test(filePath) || /loadable-stats/.test(filePath)
+        const isWrite = (!/dist\/node\/.*\.hot-update/.test(filePath) && /dist\/node\//.test(filePath)) ||
+          /loadable-stats/.test(filePath) ||
+          /dist\/web\/.*\.hot-update/.test(filePath)
+        return isWrite
       },
     }),
   )
+  app.use(webpackHotMiddleware(compiler))
 }
 
+app.use(express.static(path.join(__dirname, '../../public')))
 app.use(favicon(path.join(__dirname, '../../favicon.ico')))
 
 const nodeStats = path.resolve(
@@ -52,11 +57,16 @@ import { StaticRouter } from 'react-router-dom'
 app.get(
   '*',
   (req, res) => {
+    if (/dist\/web\/.*\.hot-update/.test(req.url)) {
+      return res.json(false)
+    }
+
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats })
     const { default: App, reducer } = nodeExtractor.requireEntrypoint()
 
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
+    console.log(req.url)
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
     const initialData = { user: {} }
     // Redux Storeの作成(initialDataには各Componentが参照するRedux Storeのstateを代入する)

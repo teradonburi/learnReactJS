@@ -42,4 +42,10 @@ function Main() {
   )
 }
 
-loadableReady(() => ReactDOM.hydrate(<Main />, document.getElementById('root')))
+if (module.hot) {
+  module.hot.accept()
+}
+
+const render = module.hot ? ReactDOM.render : ReactDOM.hydrate
+
+loadableReady(() => render(<Main />, document.getElementById('root')))

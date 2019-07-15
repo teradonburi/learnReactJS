@@ -5,7 +5,7 @@
   "author": "teradonburi <daikiterai@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/server/server.js",
+    "dev": "rm -rf public/dist && nodemon src/server/server.js",
     "lint": "eslint ."
   },
   "devDependencies": {
@@ -47,6 +47,7 @@
     "react-dom": "^16.8.6",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
-    "redux": "^4.0.4"
+    "redux": "^4.0.4",
+    "webpack-hot-middleware": "^2.25.0"
   }
 }
