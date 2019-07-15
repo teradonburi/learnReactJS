@@ -1,5 +1,17 @@
 import React from 'react'
 
-const NotFound = () => <div>NotFound</div>
+export default class NotFound extends React.PureComponent {
 
-export default NotFound
+  constructor (props) {
+    super(props)
+    const { staticContext } = props
+    if (staticContext) {
+      staticContext.is404 = true
+    }
+  }
+
+  render () {
+    return <div>NotFound</div>
+  }
+}
+

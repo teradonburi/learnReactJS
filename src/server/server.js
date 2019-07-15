@@ -1,5 +1,6 @@
 import path from 'path'
 import express from 'express'
+import favicon from 'express-favicon'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { ChunkExtractorManager, ChunkExtractor } from '@loadable/server'
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV !== 'production') {
   )
 }
 
+app.use(favicon(path.join(__dirname, '../../favicon.ico')))
 
 const nodeStats = path.resolve(
   __dirname,
@@ -76,6 +78,10 @@ app.get(
         </ThemeProvider>
       )
     )
+
+    if (context.is404) {
+      return res.status(404).send('Not Found')
+    }
 
     // Material-UIのCSSを作成
     const MUIStyles = sheets.toString()
