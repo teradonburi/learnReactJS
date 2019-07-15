@@ -14,13 +14,17 @@ if (process.env.NODE_ENV !== 'production') {
   const webpackHotMiddleware = require('webpack-hot-middleware')
   const webpack = require('webpack')
 
+  // サーバ起動時、src変更時にwebpackビルドを行う
   const compiler = webpack(webpackConfig)
 
+  // バックエンド用webpack-dev-server
   app.use(
     webpackDevMiddleware(compiler, {
       logLevel: 'error',
       publicPath: '/dist/web',
+      // dist/web、dist/nodeに書き込むファイルの判定
       writeToDisk(filePath) {
+        // ChunkExtractorが対応していないため、hot-updateを作成してもSSR側は修正版の読み込みができない
         const isWrite = (!/dist\/node\/.*\.hot-update/.test(filePath) && /dist\/node\//.test(filePath)) ||
           /loadable-stats/.test(filePath) ||
           /dist\/web\/.*\.hot-update/.test(filePath)
@@ -28,6 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
       },
     }),
   )
+  // HMR
   app.use(webpackHotMiddleware(compiler))
 }
 
@@ -57,16 +62,17 @@ import { StaticRouter } from 'react-router-dom'
 app.get(
   '*',
   (req, res) => {
-    if (/dist\/web\/.*\.hot-update/.test(req.url)) {
+    // webpackビルド完了前にhot-module（HMR）のファイル確認リクエストが来てしまう場合に無効化する
+    if (process.env.NODE_ENV !== 'production' && /dist\/web\/.*\.hot-update/.test(req.url)) {
       return res.json(false)
     }
 
+    // ChunkExtractorでビルド済みのチャンク情報を取得
+    // loadable-stats.jsonからフロントエンドモジュールを取得する
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats })
     const { default: App, reducer } = nodeExtractor.requireEntrypoint()
-
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
-    console.log(req.url)
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
     const initialData = { user: {} }
     // Redux Storeの作成(initialDataには各Componentが参照するRedux Storeのstateを代入する)
@@ -75,6 +81,7 @@ app.get(
     const sheets = new ServerStyleSheets()
     const context = {}
 
+    // SSR
     const html = renderToString(
       sheets.collect(
         <ThemeProvider theme={theme}>
@@ -89,6 +96,8 @@ app.get(
       )
     )
 
+    // react-routerに無いパスを通るとNotFoundコンポーネントが呼ばれ、contextにパラメータを埋め込む
+    // 存在しないリクエストパスはきちんと404レスポンスを返す（SEO的に）
     if (context.is404) {
       return res.status(404).send('Not Found')
     }
@@ -112,5 +121,5 @@ ${webExtractor.getStyleTags()}
 
   },
 )
-
+// サーバを起動
 app.listen(7070, () => console.log('Server started http://localhost:7070'))

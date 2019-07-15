@@ -26,6 +26,7 @@ function Main() {
   React.useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles) {
+      // フロントエンドでもMaterial-UIのスタイルを再生成するため削除する
       jssStyles.parentNode.removeChild(jssStyles)
     }
   }, [])
@@ -42,10 +43,13 @@ function Main() {
   )
 }
 
+// HMRを有効にする
 if (module.hot) {
   module.hot.accept()
 }
 
+// HMRするとき、バックエンドとフロントエンドでDOM一致しなくてhydrateだとエラー表示が出るので開発時はrenderの方を使う
 const render = module.hot ? ReactDOM.render : ReactDOM.hydrate
 
+// loadableの初期化処理完了時にレンダリング
 loadableReady(() => render(<Main />, document.getElementById('root')))
