@@ -292,7 +292,9 @@ if (process.env.NODE_ENV !== 'production') {
     webpackDevMiddleware(compiler, {
       logLevel: 'error',
       publicPath: '/dist/web',
+      // dist/web、dist/nodeに書き込むファイルの判定
       writeToDisk(filePath) {
+        // ChunkExtractorが対応していないため、hot-updateを作成してもSSR側は修正版の読み込みができない
         const isWrite = (!/dist\/node\/.*\.hot-update/.test(filePath) && /dist\/node\//.test(filePath)) ||
           /loadable-stats/.test(filePath) ||
           /dist\/web\/.*\.hot-update/.test(filePath)
@@ -330,7 +332,7 @@ import { StaticRouter } from 'react-router-dom'
 app.get(
   '*',
   (req, res) => {
-    // webpackビルド完了前にhot-module（HMR）のハッシュファイル確認リクエストが来てしまう場合に無効化する
+    // webpackビルド完了前にhot-module（HMR）のファイル確認リクエストが来てしまう場合に無効化する
     if (process.env.NODE_ENV !== 'production' && /dist\/web\/.*\.hot-update/.test(req.url)) {
       return res.json(false)
     }
@@ -342,7 +344,8 @@ app.get(
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
-    const initialData = { user: {} }
+    const users = [{'gender': 'male', 'name': {'first': 'テスト', 'last': '太郎'}, 'email': '', 'picture': {'thumbnail': 'https://avatars1.githubusercontent.com/u/771218?s=460&v=4'}}]
+    const initialData = { user: {users} }
     // Redux Storeの作成(initialDataには各Componentが参照するRedux Storeのstateを代入する)
     const store = createStore(reducer, initialData)
 
@@ -383,6 +386,7 @@ ${webExtractor.getStyleTags()}
 </head>
 <body>
   <div id="root">${html}</div>
+  <script id="initial-data">window.__STATE__=${JSON.stringify(initialData)}</script>
   ${webExtractor.getScriptTags()}
 </body>
 </html>`)
@@ -397,12 +401,14 @@ app.listen(7070, () => console.log('Server started http://localhost:7070'))
 （フロントエンドで読み込み完了時にreplaceする）  
 SSRレンダリング完了後、`webExtractor.getLinkTags()`でlinkタグ(dynamic import指定したJSスクリプトのprefetch、preload)が返却されます。  
 `webExtractor.getStyleTags()`でその他のstyleタグを埋め込みします。  
+`<script id="initial-data">window.__STATE__=${JSON.stringify(initialData)}</script>`でReduxStoreの初期化データをフロントエンドに渡します。  
 `webExtractor.getScriptTags()`でwebpackしたjsファイルタグを埋め込みます。  
 
 main-web.jsにCSRの初期化処理を記述します。  
 SSR完了後、`webExtractor.getScriptTags()`にて埋め込まれたJSファイルが読み込まれ実行されます。  
 Material-UIのテーマ情報はバックエンドと共通化するためtheme.jsに分離しました。MuiThemeProviderではなくThemeProviderを使います。  
-バックエンドで埋め込んだid属性jss-server-side内のMaterial-UI CSSをフロントエンドで削除します。  
+バックエンドで埋め込んだid属性initial-data内のRedux Store初期化データをフロントエンドで取得し不要になったDOMを削除します。  
+同様にバックエンドで埋め込んだid属性jss-server-side内のMaterial-UI CSSをフロントエンドで削除します。  
 （初回レンダリング後はフロントエンドで同様のCSSを生成するため、不要なので）  
 
 ```main-web.js
@@ -422,17 +428,24 @@ import App from './App.jsx'
 import theme from './theme'
 import reducer from './modules/reducer'
 
+// バックエンドで埋め込んだRedux Storeのデータを取得する
+const initialData = window.__STATE__ || {}
+delete window.__STATE__
+const dataElem = document.getElementById('initial-data')
+if (dataElem && dataElem.parentNode) dataElem.parentNode.removeChild(dataElem)
+
 // redux-devtoolの設定
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 // axiosをthunkの追加引数に加える
 const thunkWithClient = thunk.withExtraArgument(client)
 // redux-thunkをミドルウェアに適用
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunkWithClient)))
+const store = createStore(reducer, initialData, composeEnhancers(applyMiddleware(thunkWithClient)))
 
 
 function Main() {
+
   React.useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side')
+    const jssStyles = document.getElementById('jss-server-side')
     if (jssStyles) {
       // フロントエンドでもMaterial-UIのスタイルを再生成するため削除する
       jssStyles.parentNode.removeChild(jssStyles)
@@ -550,7 +563,7 @@ const render = module.hot ? ReactDOM.render : ReactDOM.hydrate
 loadableReady(() => render(<Main />, document.getElementById('root')))
 ```
 
-# Notfound処理
+# NotFound処理
 NotFound.jsxを修正し、SSR時に来たときに404エラーを返すように修正します。  
 
 ```NotFound.jsx

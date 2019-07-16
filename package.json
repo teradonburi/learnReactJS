@@ -25,6 +25,7 @@
     "eslint-plugin-react": "^7.14.2",
     "formik": "^1.5.8",
     "nodemon": "^1.19.1",
+    "react-helmet": "^5.2.1",
     "redux-devtools": "^3.5.0",
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.2",

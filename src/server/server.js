@@ -74,7 +74,8 @@ app.get(
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
-    const initialData = { user: {} }
+    const users = [{'gender': 'male', 'name': {'first': 'テスト', 'last': '太郎'}, 'email': '', 'picture': {'thumbnail': 'https://avatars1.githubusercontent.com/u/771218?s=460&v=4'}}]
+    const initialData = { user: {users} }
     // Redux Storeの作成(initialDataには各Componentが参照するRedux Storeのstateを代入する)
     const store = createStore(reducer, initialData)
 
@@ -115,6 +116,7 @@ ${webExtractor.getStyleTags()}
 </head>
 <body>
   <div id="root">${html}</div>
+  <script id="initial-data">window.__STATE__=${JSON.stringify(initialData)}</script>
   ${webExtractor.getScriptTags()}
 </body>
 </html>`)
