@@ -3,17 +3,18 @@ const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
 const LoadablePlugin = require('@loadable/webpack-plugin')
 const loadableBabelPlugin = require('@loadable/babel-plugin')
+const production = process.env.NODE_ENV === 'production'
 
 const getConfig = (target) => {
   const web = target === 'web'
 
-  const entry = web && process.env.NODE_ENV !== 'production' ?
+  const entry = web && !production ?
   [
     `./src/client/main-${target}.js`,
     'webpack-hot-middleware/client',
   ] : `./src/client/main-${target}.js`
 
-  const plugins = web && process.env.NODE_ENV !== 'production' ?
+  const plugins = web && !production ?
   [
       new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
       new LoadablePlugin(), // Loadableプラグイン
@@ -24,18 +25,37 @@ const getConfig = (target) => {
       new LoadablePlugin(), // Loadableプラグイン
   ]
 
+  const optimization = production ?
+  {
+    splitChunks: {
+      cacheGroups: {
+        react: {
+          test: /react/,
+          name: 'react',
+          chunks: 'all',
+        },
+        core: {
+          test: /redux|core-js|jss|history|matarial-ui|lodash|moment|prefixer|axios/,
+          name: 'core',
+          chunks: 'all',
+        },
+      },
+    },
+  } : undefined
+
   return {
     target,
-    mode: 'development', // 開発モード
+    mode: production ? 'production' : 'development', // 開発モード
     name: target,
-    devtool: 'cheap-module-source-map', // ソースマップファイル追加
+    devtool: production ? 'source-map' : 'cheap-module-source-map', // ソースマップファイル追加
     entry, // エントリポイントのjsxファイル
     output: {
       path: path.join(path.resolve(__dirname, 'public/dist'), target),
-      filename: '[name].js',
+      filename: production ? '[name]-bundle-[chunkhash:8].js' : '[name].js',
       publicPath: `/dist/${target}/`,
       libraryTarget: target === 'node' ? 'commonjs2' : undefined,
     },
+    optimization,
     plugins,
     externals: target === 'node' ? ['@loadable/component', nodeExternals()] : undefined,
     module: {

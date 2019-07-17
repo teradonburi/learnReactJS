@@ -6,6 +6,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "rm -rf public/dist && nodemon src/server/server.js",
+    "build": "rm -rf public/dist && NODE_ENV=production webpack",
+    "prod": "NODE_ENV=production babel-node --config-file ./babel.server.js src/server/server.js",
+    "rmmap": "rm -rf public/dist/node/*.map public/dist/web/*.map",
     "lint": "eslint ."
   },
   "devDependencies": {
