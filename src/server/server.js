@@ -70,7 +70,7 @@ app.get(
     // ChunkExtractorでビルド済みのチャンク情報を取得
     // loadable-stats.jsonからフロントエンドモジュールを取得する
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats })
-    const { default: App, reducer } = nodeExtractor.requireEntrypoint()
+    const { default: App, reducer, Helmet } = nodeExtractor.requireEntrypoint()
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
@@ -97,6 +97,8 @@ app.get(
       )
     )
 
+    const helmet =  Helmet.renderStatic()
+
     // react-routerに無いパスを通るとNotFoundコンポーネントが呼ばれ、contextにパラメータを埋め込む
     // 存在しないリクエストパスはきちんと404レスポンスを返す（SEO的に）
     if (context.is404) {
@@ -112,6 +114,10 @@ app.get(
 <head>
 ${webExtractor.getLinkTags()}
 ${webExtractor.getStyleTags()}
+${helmet.title.toString()}
+${helmet.meta.toString()}
+${helmet.link.toString()}
+${helmet.script.toString()}
 <style id="jss-server-side">${MUIStyles}</style>
 </head>
 <body>

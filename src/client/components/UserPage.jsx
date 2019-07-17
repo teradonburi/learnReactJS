@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Helmet } from 'react-helmet'
 
 import { withStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, Avatar, Card, CardContent, Button, Dialog, DialogTitle, DialogContent } from '@material-ui/core'
@@ -50,7 +51,11 @@ class UserPage extends React.Component {
     console.log(users)
     return (
       <div>
-        <AppBar position="static" color="primary">
+        <Helmet>
+          <title>ユーザページ</title>
+          <meta name='description' content='ユーザページのdescriptionです' />
+        </Helmet>
+        <AppBar position='static' color='primary'>
           <Toolbar classes={{root: classes.root}} >
             タイトル
             <Button style={{color: '#fff', position: 'absolute', top: 15, right: 0}} onClick={() => this.handlePageMove('/todo')}>TODOページへ</Button>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Helmet } from 'react-helmet'
 import { AppBar, Toolbar, Button, Card, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@material-ui/core'
 import { red } from '@material-ui/core/colors'
 import { Formik, Form, Field } from 'formik'
@@ -80,6 +81,10 @@ class TodoPage extends React.Component {
 
     return (
       <div>
+        <Helmet>
+          <title>TODOページ</title>
+          <meta name='description' content='TODOページのdescriptionです' />
+        </Helmet>
         <AppBar position="static" color="primary">
           <Toolbar>
             TODOページ
