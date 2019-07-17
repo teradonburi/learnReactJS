@@ -3,17 +3,18 @@ const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
 const LoadablePlugin = require('@loadable/webpack-plugin')
 const loadableBabelPlugin = require('@loadable/babel-plugin')
+const production = process.env.NODE_ENV === 'production'
 
 const getConfig = (target) => {
   const web = target === 'web'
 
-  const entry = web && process.env.NODE_ENV !== 'production' ?
+  const entry = web && !production ?
   [
     `./src/client/main-${target}.js`,
     'webpack-hot-middleware/client',
   ] : `./src/client/main-${target}.js`
 
-  const plugins = web && process.env.NODE_ENV !== 'production' ?
+  const plugins = web && !production ?
   [
       new webpack.NamedModulesPlugin(), // 名前変更無効プラグイン利用
       new LoadablePlugin(), // Loadableプラグイン
