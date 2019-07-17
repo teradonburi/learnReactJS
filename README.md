@@ -98,13 +98,14 @@ reactなどのパッケージはバックエンドでも使うためdevDependenc
     "eslint-plugin-react": "^7.14.2",
     "formik": "^1.5.8",
     "nodemon": "^1.19.1",
+    "react-helmet": "^5.2.1",
     "redux-devtools": "^3.5.0",
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.2",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.5",
     "webpack-dev-middleware": "^3.7.0",
-    "webpack-hot-middleware": "^2.25.0"
+    "webpack-hot-middleware": "^2.25.0",
     "webpack-node-externals": "^1.7.2",
     "yup": "^0.27.0"
   },
@@ -121,7 +122,7 @@ reactなどのパッケージはバックエンドでも使うためdevDependenc
     "react-dom": "^16.8.6",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
-    "redux": "^4.0.4",
+    "redux": "^4.0.4"
   }
 }
 ```
@@ -340,7 +341,7 @@ app.get(
     // ChunkExtractorでビルド済みのチャンク情報を取得
     // loadable-stats.jsonからフロントエンドモジュールを取得する
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats })
-    const { default: App, reducer } = nodeExtractor.requireEntrypoint()
+    const { default: App, reducer, Helmet } = nodeExtractor.requireEntrypoint()
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
@@ -367,6 +368,9 @@ app.get(
       )
     )
 
+    // Helmetで埋め込んだ情報を取得し、そのページのheaderに追加する
+    const helmet =  Helmet.renderStatic()
+
     // react-routerに無いパスを通るとNotFoundコンポーネントが呼ばれ、contextにパラメータを埋め込む
     // 存在しないリクエストパスはきちんと404レスポンスを返す（SEO的に）
     if (context.is404) {
@@ -382,6 +386,10 @@ app.get(
 <head>
 ${webExtractor.getLinkTags()}
 ${webExtractor.getStyleTags()}
+${helmet.title.toString()}
+${helmet.meta.toString()}
+${helmet.link.toString()}
+${helmet.script.toString()}
 <style id="jss-server-side">${MUIStyles}</style>
 </head>
 <body>
@@ -401,6 +409,7 @@ app.listen(7070, () => console.log('Server started http://localhost:7070'))
 （フロントエンドで読み込み完了時にreplaceする）  
 SSRレンダリング完了後、`webExtractor.getLinkTags()`でlinkタグ(dynamic import指定したJSスクリプトのprefetch、preload)が返却されます。  
 `webExtractor.getStyleTags()`でその他のstyleタグを埋め込みします。  
+`helmet.title.toString()`、`helmet.meta.toString()`、`helmet.meta.toString()`、`helmet.script.toString()`でHelmetタグで埋め込んだtitle、meta descriptionなどを埋め込みます。埋め込むタグはHelmetコンポーネントで記述します。（後述）  
 `<script id="initial-data">window.__STATE__=${JSON.stringify(initialData)}</script>`でReduxStoreの初期化データをフロントエンドに渡します。  
 `webExtractor.getScriptTags()`でwebpackしたjsファイルタグを埋め込みます。  
 
@@ -612,6 +621,28 @@ if (context.is404) {
   return res.status(404).send('Not Found')
 }
 ```
+
+# React HelmetでOGPやメタ情報をページ別に付与する
+React Helmetを使うことで  
+ページ別のコンポーネントにOGPやメタ情報を付与することができます。  
+今回はUserPageにて、titleタグ、meta descriptionを埋め込んでいます。  
+
+```
+  <Helmet>
+    <title>ユーザページ</title>
+    <meta name='description' content='ユーザページのdescriptionです' />
+  </Helmet>
+```
+
+同様にTodoPageにて、titleタグ、meta descriptionを埋め込んでいます。  
+
+```
+  <Helmet>
+    <title>TODOページ</title>
+    <meta name='description' content='TODOページのdescriptionです' />
+  </Helmet>
+```
+
 
 # その他フロントエンドの修正
 UserPage.jsxにてMaterial-UIのwithWidthはバックエンドで使えないため、外しています。  

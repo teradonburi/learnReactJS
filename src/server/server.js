@@ -97,6 +97,7 @@ app.get(
       )
     )
 
+    // Helmetで埋め込んだ情報を取得し、そのページのheaderに追加する
     const helmet =  Helmet.renderStatic()
 
     // react-routerに無いパスを通るとNotFoundコンポーネントが呼ばれ、contextにパラメータを埋め込む
