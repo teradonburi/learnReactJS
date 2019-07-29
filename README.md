@@ -68,7 +68,7 @@ $ yarn add --dev core-js regenerator-runtime
 ```
 
 package.jsonは次のようになります。  
-reactなどのパッケージはバックエンドでも使うためdevDependenciesに移行します。  
+reactなどのパッケージはバックエンドでも使うためdependenciesに移行します。  
 
 ```
 {
@@ -383,7 +383,7 @@ app.get(
 
     res.set('content-type', 'text/html')
     res.send(`<!DOCTYPE html>
-<html>
+<html lang='ja'>
 <head>
 ${webExtractor.getLinkTags()}
 ${webExtractor.getStyleTags()}
@@ -391,7 +391,9 @@ ${helmet.title.toString()}
 ${helmet.meta.toString()}
 ${helmet.link.toString()}
 ${helmet.script.toString()}
-<style id="jss-server-side">${MUIStyles}</style>
+<meta charset='utf-8' />
+<style id='jss-server-side'>${MUIStyles}</style>
+<meta name='viewport' content='width=device-width, initial-scale=1' />
 </head>
 <body>
   <div id="root">${html}</div>
