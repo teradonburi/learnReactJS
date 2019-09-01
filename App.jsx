@@ -4,7 +4,7 @@ import useActions from './useActions'
 import { load } from './user'
 
 function useUserHook() {
-  const users = useSelector(state => state.user.users) || []
+  const users = useSelector(state => state.user.users)
   const [loadUser] = useActions([load])
   console.log(users)
 

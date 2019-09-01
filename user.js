@@ -3,7 +3,7 @@ const LOAD = 'user/LOAD'
 
 // 初期化オブジェクト
 const initialState = {
-  users: null,
+  users: [],
 }
 
 // reducerの定義（dispatch時にコールバックされる）
