@@ -32,5 +32,4 @@ function App() {
   )
 }
 
-// connectでwrap
 export default App
