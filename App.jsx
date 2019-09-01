@@ -1,43 +1,36 @@
-import React from 'react'
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import useActions from './useActions'
 import { load } from './user'
 
-class App extends React.Component {
+function useUserHook() {
+  const users = useSelector(state => state.user.users) || []
+  const [loadUser] = useActions([load])
+  console.log(users)
 
-  componentDidMount() {
-    // user取得APIコールのactionをキックする
-    this.props.load()
-  }
+  useEffect(() => {
+    loadUser()
+  }, [])
+  return users
+}
 
-  render () {
-    const { users } = this.props
-    // 初回はnullが返ってくる（initialState）、処理完了後に再度結果が返ってくる
-    console.log(users)
-    return (
-      <div>
-          {/* 配列形式で返却されるためmapで展開する */}
-          {users && users.map((user) => {
-            return (
-                // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
-                <div key={user.email}>
-                  <img src={user.picture.thumbnail} />
-                  <p>名前:{user.name.first + ' ' + user.name.last}</p>
-                  <p>性別:{user.gender}</p>
-                  <p>email:{user.email}</p>
-                </div>
-            )
-          })}
-      </div>
-    )
-  }
+function App() {
+  const users = useUserHook()
+
+  return (
+    <div>
+      {users.map((user) => (
+        // ループで展開する要素には一意なkeyをつける（ReactJSの決まり事）
+        <div key={user.email}>
+          <img src={user.picture.thumbnail} />
+          <p>名前:{user.name.first + ' ' + user.name.last}</p>
+          <p>性別:{user.gender}</p>
+          <p>email:{user.email}</p>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 // connectでwrap
-export default connect(
-  // propsに受け取るreducerのstate
-  state => ({
-    users: state.user.users
-  }),
-  // propsに付与するactions
-  { load }
-)(App)
+export default App
