@@ -1,5 +1,5 @@
 module.exports = {
-  'parser': 'babel-eslint',
+  'parser': '@typescript-eslint/parser',
   'env': {
     'browser': true, // ブラウザ
     'es6': true, // ES6
@@ -9,6 +9,7 @@ module.exports = {
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
+    "plugin:@typescript-eslint/recommended",
   ],
   'parserOptions': {
     'ecmaFeatures': {
@@ -16,14 +17,15 @@ module.exports = {
       'jsx': true, // JSX文法有効
       'legacyDecorators': true
     },
-    'sourceType': 'module'
+    'sourceType': 'module',
   },
   'settings': { 
     'react': { 'version' : 'detect' }
   },
   // reactプラグイン使用
   'plugins': [
-    'react'
+    'react',
+    "@typescript-eslint"
   ],
   'globals': {
   },

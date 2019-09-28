@@ -2,3 +2,4 @@ node_modules
 dist
 public
 .DS_store
+yarn-error.log
