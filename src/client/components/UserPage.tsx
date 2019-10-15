@@ -9,7 +9,20 @@ import { orange } from '@material-ui/core/colors'
 
 import { load } from '../modules/user'
 
-class UserPage extends React.Component {
+interface Props {
+  users;
+  theme;
+  classes;
+  location;
+  load;
+  history;
+}
+interface State {
+  open;
+  user;
+}
+
+class UserPage extends React.Component<Props, State> {
 
   constructor (props) {
     super(props)
@@ -110,7 +123,7 @@ export default withStyles((theme) => ({ // classes propsを付与
 }), {withTheme: true})(
   connect(
     // propsに受け取るreducerのstate
-    state => ({
+    (state: any) => ({
       users: state.user.users,
     }),
     // propsに付与するactions

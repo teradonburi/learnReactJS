@@ -9,7 +9,9 @@ module.exports = {
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
-    "plugin:@typescript-eslint/recommended",
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'prettier/@typescript-eslint',
   ],
   'parserOptions': {
     'ecmaFeatures': {
@@ -119,5 +121,7 @@ module.exports = {
     'react/no-unused-state': 'error',
     // 中身が空のタグはself closingをさせる
     'react/self-closing-comp': 'error',
+    // any型の警告無視
+    '@typescript-eslint/no-explicit-any': 'off',
   }
 }

@@ -1,8 +1,9 @@
+import { com } from '../../../types/interface'
 import React from 'react'
 
 export default class NotFound extends React.PureComponent {
 
-  constructor (props: {staticContext? : any}) {
+  constructor (props: {staticContext? : com.router.StaticRouterContextEx}) {
     super(props)
     const { staticContext } = props
     if (staticContext) {

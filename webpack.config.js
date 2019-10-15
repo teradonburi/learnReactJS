@@ -59,7 +59,9 @@ const getConfig = (target) => {
     plugins,
     externals: target === 'node' ? ['@loadable/component', nodeExternals()] : undefined,
     module: {
-      rules: [{
+      rules: [
+      { test: /\.(ts|tsx)$/, loader: 'ts-loader' },
+      {
         test: /\.(js|jsx)$/, // 拡張子がjsかjsxで
         exclude: /node_modules/, // node_modulesフォルダ配下は除外
         use: {
@@ -89,4 +91,4 @@ const getConfig = (target) => {
   }
 }
 
-module.exports = [getConfig('web'), getConfig('node')]
+export default [getConfig('web'), getConfig('node')]

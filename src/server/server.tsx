@@ -1,3 +1,5 @@
+import { com } from '../../types/interface'
+
 import path from 'path'
 import express from 'express'
 import favicon from 'express-favicon'
@@ -8,11 +10,12 @@ import { ChunkExtractorManager, ChunkExtractor } from '@loadable/server'
 const app = express()
 
 
+import webpackConfig from '../../webpack.config'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import webpack from 'webpack'
+
 if (process.env.NODE_ENV !== 'production') {
-  import webpackConfig from '../../webpack.config'
-  import webpackDevMiddleware from 'webpack-dev-middleware'
-  import webpackHotMiddleware from 'webpack-hot-middleware'
-  import webpack from 'webpack'
 
   // サーバ起動時、src変更時にwebpackビルドを行う
   const compiler = webpack(webpackConfig)
@@ -70,7 +73,7 @@ app.get(
     // ChunkExtractorでビルド済みのチャンク情報を取得
     // loadable-stats.jsonからフロントエンドモジュールを取得する
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats })
-    const { default: App, reducer, Helmet } = nodeExtractor.requireEntrypoint()
+    const { default: App, reducer, Helmet } = nodeExtractor.requireEntrypoint() as any
     const webExtractor = new ChunkExtractor({ statsFile: webStats })
 
     // 疑似ユーザ作成（本来はDBからデータを取得して埋め込む)
@@ -80,7 +83,7 @@ app.get(
     const store = createStore(reducer, initialData)
 
     const sheets = new ServerStyleSheets()
-    const context = {is404: false}
+    const context: com.router.StaticRouterContextEx = {is404: false}
 
     // SSR
     const html = renderToString(

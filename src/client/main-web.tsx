@@ -1,3 +1,7 @@
+import { com } from '../../types/interface'
+declare let window: com.global.WindowEx
+declare let module: com.global.NodeModuleEx
+
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import React  from 'react'

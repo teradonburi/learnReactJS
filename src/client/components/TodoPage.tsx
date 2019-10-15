@@ -51,7 +51,11 @@ const FormSelect = ({label, children, field, form: { touched, errors }, ...props
   </FormControl>
 )
 
-class TodoPage extends React.Component {
+interface Props {
+  add;
+}
+
+class TodoPage extends React.Component<Props, {}> {
 
   constructor(props) {
     super(props)

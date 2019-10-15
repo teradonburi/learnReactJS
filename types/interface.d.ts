@@ -1,9 +1,21 @@
+import { StaticRouterContext } from 'react-router'
+
 export namespace com {
-  // namespaceを入れ子にできるcom.modelのようにアクセスする
-  export namespace model {
-    export interface TestModel {
-      title: string;
-      age: number;
+  export namespace global {
+    export interface WindowEx extends Window {
+      __STATE__: object;
+      __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: <F extends Function>(f: F) => <R>(a: R) => R;
+    }
+    export interface NodeModuleEx extends NodeModule {
+      hot: {
+        accept: () => void;
+      };
+    }
+  }
+  export namespace router {
+    export interface StaticRouterContextEx extends StaticRouterContext {
+      is404: boolean;
     }
   }
 }
+

@@ -1,6 +1,3 @@
 {
-  "ignore": ["client", "public"],
-  "execMap": {
-    "js": "babel-node --config-file ./babel.server.js --inspect"
-  }
+  "ignore": ["client", "public"]
 }
