@@ -14,7 +14,7 @@ import { loadableReady } from '@loadable/component'
 import client from 'axios'
 import thunk from 'redux-thunk'
 
-import App from './App.jsx'
+import App from './App'
 import theme from './theme'
 import reducer from './modules/reducer'
 

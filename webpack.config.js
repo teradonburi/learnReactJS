@@ -5,14 +5,34 @@ const LoadablePlugin = require('@loadable/webpack-plugin')
 const loadableBabelPlugin = require('@loadable/babel-plugin')
 const production = process.env.NODE_ENV === 'production'
 
+const babelOptions = (web) => ({
+  presets: [
+    [
+      '@babel/preset-env',
+      {
+        useBuiltIns: web ? 'entry' : undefined,
+        corejs: web ? 'core-js@3' : false,
+        targets: web ? undefined : { node: 'current' },
+        modules: false,
+      },
+    ],
+    '@babel/preset-react',
+  ],
+  plugins: [
+    ['@babel/plugin-proposal-class-properties', { loose: true }], // クラスのdefaultProps、アローファンクション用
+    '@babel/plugin-syntax-dynamic-import', // dynamic-importプラグイン
+    loadableBabelPlugin, // @loadable/babelプラグイン
+  ],
+})
+
 const getConfig = (target) => {
   const web = target === 'web'
 
   const entry = web && !production ?
   [
-    `./src/client/main-${target}.js`,
+    `./src/client/main-${target}.tsx`,
     'webpack-hot-middleware/client',
-  ] : `./src/client/main-${target}.js`
+  ] : `./src/client/main-${target}.tsx`
 
   const plugins = web && !production ?
   [
@@ -58,37 +78,38 @@ const getConfig = (target) => {
     optimization,
     plugins,
     externals: target === 'node' ? ['@loadable/component', nodeExternals()] : undefined,
+    resolve: {
+      extensions: [
+        '.ts',
+        '.tsx',
+        '.js',
+      ]
+    },
     module: {
       rules: [
-      { test: /\.(ts|tsx)$/, loader: 'ts-loader' },
+      { 
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: babelOptions(web)
+          },
+          {
+            loader: 'ts-loader'
+          }
+        ],
+      },
       {
         test: /\.(js|jsx)$/, // 拡張子がjsかjsxで
         exclude: /node_modules/, // node_modulesフォルダ配下は除外
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  useBuiltIns: web ? 'entry' : undefined,
-                  corejs: web ? 'core-js@3' : false,
-                  targets: web ? undefined : { node: 'current' },
-                  modules: false,
-                },
-              ],
-              '@babel/preset-react',
-            ],
-            plugins: [
-              ['@babel/plugin-proposal-class-properties', { loose: true }], // クラスのdefaultProps、アローファンクション用
-              '@babel/plugin-syntax-dynamic-import', // dynamic-importプラグイン
-              loadableBabelPlugin, // @loadable/babelプラグイン
-            ],
-          },
-        },
+          options: babelOptions(web),
+        }
       }],
     },
   }
 }
 
-export default [getConfig('web'), getConfig('node')]
+module.exports = [getConfig('web'), getConfig('node')]
