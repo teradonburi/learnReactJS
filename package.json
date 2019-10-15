@@ -12,7 +12,7 @@
     "lint": "eslint ."
   },
   "resolutions": {
-    "@types/react": "16.9.5"
+    "@types/react": "16.9.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
@@ -27,8 +27,8 @@
     "@types/loadable__component": "^5.10.0",
     "@types/loadable__server": "^5.9.1",
     "@types/node": "^12.7.8",
-    "@types/react": "^16.9.5",
-    "@types/react-dom": "^16.9.1",
+    "@types/react": "^16.9.6",
+    "@types/react-dom": "^16.9.2",
     "@types/react-helmet": "^5.0.11",
     "@types/react-redux": "^7.1.4",
     "@types/react-router-dom": "^5.1.0",
@@ -72,10 +72,10 @@
     "@material-ui/icons": "^4.2.1",
     "express": "^4.17.1",
     "express-favicon": "^2.0.1",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "react-redux": "^7.1.0",
-    "react-router-dom": "^5.0.1",
+    "react-router-dom": "^5.1.2",
     "redux": "^4.0.4"
   }
 }
